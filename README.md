@@ -14,6 +14,6 @@ v2.25
 **I'm making new models for the parts**
 
 **Dowload:**
-*[GitHub](https://github.com/Olympic1/Unofficial_LTech/releases)
-*[DropBox](https://www.dropbox.com/s/qe26f6avokdwzrx/LTech_v2.25.zip?dl=0)
-*[KerbalStuff](https://kerbalstuff.com/mod/563/L-Tech%20Unofficial)
+* [GitHub](https://github.com/Olympic1/Unofficial_LTech/releases)
+* [DropBox](https://www.dropbox.com/s/qe26f6avokdwzrx/LTech_v2.25.zip?dl=0)
+* [KerbalStuff](https://kerbalstuff.com/mod/563/L-Tech%20Unofficial)

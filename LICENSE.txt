@@ -1,0 +1,3 @@
+License
+LTScience: The MIT License (MIT)
+LTScience Parts(Aka Models): No distribution. Please request author Dungchunker on kerbal space program forums

@@ -1,17 +1,13 @@
 # Unofficial_LTech
-A unofficial fix for L-Tech Sciencific Industries
+A unofficial fix for L-Tech Scientific Industries
 
-v2.25
-* You can now test the Airbrake (contract)
-* Gave the agency a description
-* Redid all the cfg's
-* ARP support (Icons later)
-* Snacks support
-* CLS support for the SkyLab
-* Better KAS support
-* Works for JSI and VDSHullCam
-
-**I'm making new models for the parts**
+v3.0
+* Fixed cfg's
+    * Fixed nodes
+	* Changed maxTemp
+	* Added bulkheadProfiles
+	* Removed NEEDS
+* Updated KAS to KIS
 
 **Dowload:**
 * [GitHub](https://github.com/Olympic1/Unofficial_LTech/releases)

@@ -11,7 +11,8 @@ public class LTechScienceBase : ModuleScienceExperiment
     public static bool checkBoring(Vessel vessel, bool msg = false)
     {
         //print(vessel.Landed + ", " + vessel.landedAt + ", " + vessel.launchTime + ", " + vessel.situation + ", " + vessel.orbit.referenceBody.name);
-        if ((vessel.orbit.referenceBody.name == "Kerbin") && (vessel.situation == Vessel.Situations.LANDED || vessel.situation == Vessel.Situations.PRELAUNCH || vessel.situation == Vessel.Situations.SPLASHED || vessel.altitude <= vessel.orbit.referenceBody.maxAtmosphereAltitude))
+        //if ((vessel.orbit.referenceBody.name == "Kerbin") && (vessel.situation == Vessel.Situations.LANDED || vessel.situation == Vessel.Situations.PRELAUNCH || vessel.situation == Vessel.Situations.SPLASHED || vessel.altitude <= vessel.orbit.referenceBody.maxAtmosphereAltitude))
+        if ((vessel.orbit.referenceBody.name == "Kerbin") && (vessel.situation == Vessel.Situations.LANDED || vessel.situation == Vessel.Situations.PRELAUNCH || vessel.situation == Vessel.Situations.SPLASHED || vessel.altitude <= vessel.orbit.referenceBody.atmosphereDepth))
         {
             if (msg)
                 ScreenMessages.PostScreenMessage("Too boring here. Go to space!", 6, ScreenMessageStyle.UPPER_CENTER);
@@ -31,10 +32,12 @@ public class LTechScienceBase : ModuleScienceExperiment
         if (node.splashed && vessel.situation == Vessel.Situations.SPLASHED)
             return true;
 
-        if (node.flying && vessel.altitude <= vessel.orbit.referenceBody.maxAtmosphereAltitude)
+        //if (node.flying && vessel.altitude <= vessel.orbit.referenceBody.maxAtmosphereAltitude)
+        if (node.flying && vessel.altitude <= vessel.orbit.referenceBody.atmosphereDepth)
             return true;
 
-        if (node.space && vessel.altitude > vessel.orbit.referenceBody.maxAtmosphereAltitude)
+        //if (node.space && vessel.altitude > vessel.orbit.referenceBody.maxAtmosphereAltitude)
+        if (node.space && vessel.altitude > vessel.orbit.referenceBody.atmosphereDepth)
             return true;
 
     	return false;

@@ -1,0 +1,9 @@
+v0.2.3
+* Updated for KSP 1.0.5
+* Updated cfg's
+* Updated KAS to KIS
+* Added .version file
+* Merged LTToolbar into LTScience
+* Dropped Toolbar dependency
+* Added button to the AppLauncher
+* Added icons for Alternate Resource Panel

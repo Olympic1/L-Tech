@@ -27,6 +27,7 @@ v0.2.3
 * Updated cfg's
 * Updated KAS to KIS
 * Added .version file
+* DDS'efied tga's (thanks Linuxgurugamer)
 * Merged LTToolbar into LTScience
 * Dropped Toolbar dependency
 * Added button to the AppLauncher
@@ -43,13 +44,13 @@ v0.2.3
 [GIT:shield]: http://img.shields.io/github/release/Olympic1/Unofficial_LTech.svg
 [KSP:website]: http://kerbalspaceprogram.com
 
-[KSP:shield]: http://img.shields.io/badge/KSP-v1.0.5-green.svg
+[KSP:shield]: http://img.shields.io/badge/KSP-v1.1.3-green.svg
 [MIT:license]: http://github.com/Olympic1/Unofficial_LTech/blob/master/LICENSE.txt
 [MIT:shield]: http://img.shields.io/badge/License-MIT-blue.svg
 
 [GH:url]: https://github.com/Olympic1/Unofficial_LTech/releases
 [GH:logo]: http://i59.tinypic.com/2i11u2d.jpg
-[DB:url]: 
+[DB:url]: https://www.dropbox.com/s/e7hjvnr0xahyhy9/LTechRevived.zip?dl=0
 [DB:logo]: http://i60.tinypic.com/70jj43.jpg
 [SD:url]: https://spacedock.info/mod/227
-[SD:logo]: 
+[SD:logo]: http://i65.tinypic.com/ot0ks9.jpg

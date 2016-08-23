@@ -3,6 +3,7 @@ v0.2.3
 * Updated cfg's
 * Updated KAS to KIS
 * Added .version file
+* DDS'efied tga's (thanks Linuxgurugamer)
 * Merged LTToolbar into LTScience
 * Dropped Toolbar dependency
 * Added button to the AppLauncher

@@ -1,43 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace LTScience
 {
-	//[KSPAddon(KSPAddon.Startup.Flight, false)]
-	public class SkyLabExperimentGUI : MonoBehaviour
-	{
+    [KSPAddon(KSPAddon.Startup.Flight, false)]
+    public class SkyLabExperimentGUI : MonoBehaviour
+    {
         protected Rect windowPos = new Rect(20, 20, 100, 150);
-        protected int windowID = -5234628;
+        protected int windowID = 5234628;
 
         public SkyLabConfig configcore;
-        public SkyLabExperiment ActiveLab;
+        public SkyLabExperiment activeLab;
 
-        public bool Active = false;
+        public bool uiShown = false;
 
-        public void drawGUI()
+        public void DrawUI()
         {
-            if (Active)
+            if (uiShown)
             {
                 if (ValidLab())
-                {
                     windowPos = GUILayout.Window(windowID, windowPos, Window, "SkyLab Experiments");
-                }
                 else
-                {
-                    Active = false;
-                }
+                    uiShown = false;
             }
         }
 
         private bool ValidLab()
         {
-            if (ActiveLab == null)
-            {
+            if (activeLab == null)
                 return false;
-            }
 
             return true;
         }
@@ -52,8 +42,8 @@ namespace LTScience
 
                 if (GUILayout.Button("Study " + node.DisplayName, GUILayout.Height(50)))
                 {
-                    ActiveLab.DoScienceThing(node);
-                    Active = false;
+                    activeLab.DoScienceThing(node);
+                    uiShown = false;
                 }
 
                 GUILayout.EndHorizontal();
@@ -62,9 +52,7 @@ namespace LTScience
             GUILayout.BeginHorizontal(GUILayout.ExpandHeight(false));
 
             if (GUILayout.Button("Close", GUILayout.Height(50)))
-            {
-                Active = false;
-            }
+                uiShown = false;
 
             GUILayout.EndHorizontal();
             GUILayout.EndVertical();

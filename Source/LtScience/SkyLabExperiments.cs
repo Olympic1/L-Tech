@@ -6,25 +6,25 @@ using UnityEngine;
 
 namespace LTScience
 {
-	[KSPAddon(KSPAddon.Startup.Flight, false)]
-	public class SkyLabConfig : MonoBehaviour
-	{
+    [KSPAddon(KSPAddon.Startup.Flight, false)]
+    public class SkyLabConfig : MonoBehaviour
+    {
         ConfigNode settings;
-        public SkyLabExperimentGUI LabGUI;
+        public SkyLabExperimentGUI labGUI;
 
         private string cfgpath = "GameData/LTech/Config/SkyLabExperiments.cfg";
 
         public SkyLabExperimentData[] experiments;
-        
-		public void LoadExperiments()
-		{
-	        //Load settings
+
+        public void LoadExperiments()
+        {
+            // Load settings
             settings = ConfigNode.Load(KSPUtil.ApplicationRootPath + cfgpath);
             experiments = new SkyLabExperimentData[settings.CountNodes];
             int Num = 0;
 
-	        foreach (ConfigNode node in settings.GetNodes("Experiment"))
-	        {
+            foreach (ConfigNode node in settings.GetNodes("Experiment"))
+            {
                 SkyLabExperimentData Xper = new SkyLabExperimentData();
 
                 Xper.Name = node.GetValue("Name");
@@ -51,40 +51,24 @@ namespace LTScience
 
                 experiments[Num] = Xper;
                 Num = Num + 1;
-	        }
+            }
+        }
 
-            print("Experiments loaded!");
-		}
-        
-		public void Awake()
-		{
-            print("Loading SkyLab Experiments. Code: LT-LSLE");
+        public void Awake()
+        {
             LoadExperiments();
 
-            print("Intialising SkyLab GUI! Code: LT-ISLG");
-            LabGUI = new SkyLabExperimentGUI();
-            LabGUI.configcore = this;
+            labGUI = new SkyLabExperimentGUI();
+            labGUI.configcore = this;
+        }
 
-            RenderingManager.AddToPostDrawQueue(3, new Callback(LabGUI.drawGUI));
-		}
-        
-		public void Start()
+        private void OnGUI()
         {
-            /*
-            if (HighLogic.LoadedSceneIsEditor || this.vessel == null)
-            {
-                return;
-            }
+            labGUI.DrawUI();
+        }
 
-            foreach (var vessel in FlightGlobals.Vessels)
-            {
-                vessel.FindPartModulesImplementing<SkyLabExperiment>().ForEach(part =>
-                {
-                    part.config = this;
-                });
-            }
-            */
-
+        public void Start()
+        {
             if (HighLogic.LoadedScene == GameScenes.FLIGHT)
             {
                 foreach (var vessel in FlightGlobals.Vessels)
@@ -96,10 +80,10 @@ namespace LTScience
                 }
             }
         }
-	}
-    
-	public class SkyLabExperimentData : MonoBehaviour
-	{
+    }
+
+    public class SkyLabExperimentData : MonoBehaviour
+    {
         public string Name = "Error";
         public string DisplayName = "Error";
 
@@ -115,5 +99,5 @@ namespace LTScience
         public bool space = false;
         public bool splashed = false;
         public bool landed = false;
-	}
+    }
 }

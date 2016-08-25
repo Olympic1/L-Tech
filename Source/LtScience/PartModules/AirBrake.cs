@@ -1,8 +1,4 @@
-﻿using A;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class LTechAirBrake : ModuleAnimateGeneric
 {
@@ -19,39 +15,35 @@ public class LTechAirBrake : ModuleAnimateGeneric
 
     private float parachuteDrag;
     private bool staged = false;
-    
-	public override void OnStart(StartState state)
+
+    public override void OnStart(StartState state)
     {
-        base.part.stagingIcon = "PARACHUTES";
+        part.stagingIcon = "PARACHUTES";
         base.OnStart(state);
     }
-    
-	public override void OnUpdate()
-    {
-		if (this.animSwitch)
-		{
-            this.targetDrag = stoweddrag;
-		}
-        else
-        {
-            this.targetDrag = deployeddrag;
-		}
 
-        this.parachuteDrag = Mathf.Lerp(this.parachuteDrag, this.targetDrag, dragrate * Time.deltaTime);
-        base.part.maximum_drag = this.parachuteDrag;
-    }
-	
-	public override void OnActive()
-	{
-		if (!this.staged && this.animSwitch)
-		{
-            this.staged = true;
-            this.Toggle();
-		}
-	}
-    
-	public override string GetInfo()
+    public override void OnUpdate()
     {
-        return "Deployed drag: " + this.deployeddrag + " \n" + "Stowed drag: " + this.stoweddrag;
+        if (animSwitch)
+            targetDrag = stoweddrag;
+        else
+            targetDrag = deployeddrag;
+
+        parachuteDrag = Mathf.Lerp(parachuteDrag, targetDrag, dragrate * Time.deltaTime);
+        part.maximum_drag = parachuteDrag;
+    }
+
+    public override void OnActive()
+    {
+        if (!staged && animSwitch)
+        {
+            staged = true;
+            Toggle();
+        }
+    }
+
+    public override string GetInfo()
+    {
+        return "Deployed drag: " + deployeddrag + " \n" + "Stowed drag: " + stoweddrag;
     }
 }

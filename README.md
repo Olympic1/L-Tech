@@ -21,9 +21,8 @@ This is an unofficial fix for [L-Tech Scientific Industries](http://forum.kerbal
 * [RasterPropMonitor](http://forum.kerbalspaceprogram.com/threads/117471)
 * [Snacks](http://forum.kerbalspaceprogram.com/threads/90841)
 
-#### New in v0.2.3
-v0.2.3
-* Updated for KSP 1.0.5
+#### New in v0.3.1
+* Updated for KSP 1.1.3
 * Updated cfg's
 * Updated KAS to KIS
 * Added .version file

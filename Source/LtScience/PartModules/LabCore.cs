@@ -17,7 +17,7 @@
 
     private bool IsActive()
     {
-        return doResearch && part.protoModuleCrew.Count >= minimumCrew && !checkBoring(vessel, false);
+        return doResearch && part.protoModuleCrew.Count >= minimumCrew && !CheckBoring(vessel, false);
     }
 
     private float last_production = 0;
@@ -38,7 +38,7 @@
                 status = "Paused";
             else if (part.protoModuleCrew.Count < minimumCrew)
                 status = "Insufficient crew (add " + (minimumCrew - part.protoModuleCrew.Count) + " more crew)";
-            else if (checkBoring(vessel, false))
+            else if (CheckBoring(vessel, false))
                 status = "Location too boring";
             else
                 status = "ERROR!";

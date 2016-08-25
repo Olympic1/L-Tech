@@ -43,10 +43,10 @@ public class SkyLabExperiment : LTechScienceBase
     {
         string msg = "";
 
-        if (checkBoring(vessel, true))
+        if (CheckBoring(vessel, true))
             return;
 
-        if (!canrunexperiment(vessel, node, ref msg))
+        if (!CanRunExperiment(vessel, node, ref msg))
         {
             ScreenMessages.PostScreenMessage("You can't run that experiment right now!\n" + msg, 6, ScreenMessageStyle.UPPER_CENTER);
             return;
@@ -54,17 +54,18 @@ public class SkyLabExperiment : LTechScienceBase
 
         if (LTSUseResources("Insight", node.ReqInsight))
         {
-            if (LTSUseResources(node.ReqResource, node.ReqResAmount))
+            if (LTSUseResources(node.ReqResource, node.ReqAmount))
             {
                 experimentID = specialExperimentName + node.Name;
                 experiment.id = specialExperimentName + node.Name;
                 experiment.experimentTitle = specialExperimentTitle.Replace("#Exp#", node.DisplayName);
-                experiment.baseValue = node.ScienceVal;
+                experiment.baseValue = node.ScienceValue;
+                experiment.scienceCap = node.ScienceCap;
                 experiment.dataScale = node.DataScale;
                 base.DeployExperiment();
             }
             else
-                ScreenMessages.PostScreenMessage("Need: " + node.ReqResAmount + " of " + node.ReqResource + "!", 6, ScreenMessageStyle.UPPER_CENTER);
+                ScreenMessages.PostScreenMessage("Need: " + node.ReqAmount + " of " + node.ReqResource + "!", 6, ScreenMessageStyle.UPPER_CENTER);
         }
         else
             ScreenMessages.PostScreenMessage("Need: " + node.ReqInsight + " of Insight!", 6, ScreenMessageStyle.UPPER_CENTER);

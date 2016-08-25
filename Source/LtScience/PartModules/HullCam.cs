@@ -55,7 +55,7 @@ public class HullCamera : LTechScienceBase
     protected static float origClip;
     protected static Texture2D overlayTex = null;
 
-    private string folder = KSPUtil.ApplicationRootPath + @"Screenshots/LTech";
+    private string folder = KSPUtil.ApplicationRootPath + @"Screenshots/LTech/";
 
     public bool takingpic = false;
     public bool tookpic = false;
@@ -63,8 +63,8 @@ public class HullCamera : LTechScienceBase
 
     public void ToMainCamera()
     {
-        //if ((cam != null) && (cam.transform != null))
-        //{
+        if ((cam != null) && (cam.transform != null))
+        {
             cam.transform.parent = origParent;
             Camera.main.nearClipPlane = origClip;
 
@@ -77,10 +77,7 @@ public class HullCamera : LTechScienceBase
                 currentCamera.ltCamActive = false;
 
             currentCamera = null;
-
-        //    //MapView.EnterMapView();
-        //    //MapView.ExitMapView();
-        //}
+        }
     }
 
     [KSPEvent(guiActive = true, guiName = "Take RL picture")]

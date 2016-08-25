@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace LTScience
 {
@@ -28,29 +24,25 @@ namespace LTScience
                 SkyLabExperimentData Xper = new SkyLabExperimentData();
 
                 Xper.Name = node.GetValue("Name");
-                print("Loading Experiment " + Xper.Name);
-
                 Xper.DisplayName = node.GetValue("DisplayName");
-                print("Display Name: " + Xper.DisplayName);
 
                 Xper.ReqResource = node.GetValue("ReqResource");
-                Xper.ReqResAmount = int.Parse(node.GetValue("ReqResAmount"));
-                print("Resource: " + Xper.ReqResAmount + " of " + Xper.ReqResource);
-
+                Xper.ReqAmount = int.Parse(node.GetValue("ReqAmount"));
                 Xper.ReqInsight = int.Parse(node.GetValue("ReqInsight"));
-                print("Insight: " + Xper.ReqInsight);
 
-                Xper.ScienceVal = int.Parse(node.GetValue("Science"));
-                Xper.DataScale = int.Parse(node.GetValue("Data"));
-                print("Science: " + Xper.ScienceVal + " Data: " + Xper.DataScale);
+                Xper.ScienceValue = int.Parse(node.GetValue("Science"));
+                Xper.ScienceCap = int.Parse(node.GetValue("Cap"));
+                Xper.DataScale = int.Parse(node.GetValue("Scale"));
+
+                Xper.ReqAtmo = bool.Parse(node.GetValue("ReqAtmo"));
 
                 Xper.landed = bool.Parse(node.GetValue("Landed"));
                 Xper.splashed = bool.Parse(node.GetValue("Splashed"));
-                Xper.space = bool.Parse(node.GetValue("Space"));
                 Xper.flying = bool.Parse(node.GetValue("Flying"));
+                Xper.space = bool.Parse(node.GetValue("Space"));
 
                 experiments[Num] = Xper;
-                Num = Num + 1;
+                Num += 1;
             }
         }
 
@@ -88,16 +80,18 @@ namespace LTScience
         public string DisplayName = "Error";
 
         public string ReqResource = "";
-        public int ReqResAmount = 0;
+        public int ReqAmount = 0;
         public int ReqInsight = 0;
 
-        public int ScienceVal = 0;
+        public int ScienceValue = 0;
+        public int ScienceCap = 0;
         public int DataScale = 0;
-        public int sciencecap = 0;
 
+        public bool ReqAtmo = false;
+
+        public bool landed = false;
+        public bool splashed = false;
         public bool flying = false;
         public bool space = false;
-        public bool splashed = false;
-        public bool landed = false;
     }
 }

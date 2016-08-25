@@ -5,7 +5,7 @@ public class LTechScienceBase : ModuleScienceExperiment
 {
     private int resource = 0;
 
-    public static bool checkBoring(Vessel vessel, bool msg = false)
+    public static bool CheckBoring(Vessel vessel, bool msg = false)
     {
         if ((vessel.orbit.referenceBody.name == "Kerbin") && (vessel.situation == Vessel.Situations.LANDED || vessel.situation == Vessel.Situations.PRELAUNCH || vessel.situation == Vessel.Situations.SPLASHED || vessel.altitude <= vessel.orbit.referenceBody.atmosphereDepth))
         {
@@ -19,7 +19,7 @@ public class LTechScienceBase : ModuleScienceExperiment
     }
 
     // Simple system to prevent some experiments from being run in places they can't be ran.
-    public bool canrunexperiment(Vessel vessel, SkyLabExperimentData node, ref string msg)
+    public bool CanRunExperiment(Vessel vessel, SkyLabExperimentData node, ref string msg)
     {
         msg = "Vessel must be (one of): ";
 
@@ -27,6 +27,7 @@ public class LTechScienceBase : ModuleScienceExperiment
         {
             if (vessel.situation == Vessel.Situations.LANDED)
                 return true;
+
             msg += "landed, ";
         }
 
@@ -34,6 +35,7 @@ public class LTechScienceBase : ModuleScienceExperiment
         {
             if (vessel.situation == Vessel.Situations.SPLASHED)
                 return true;
+
             msg += "splashed down, ";
         }
 
@@ -41,6 +43,7 @@ public class LTechScienceBase : ModuleScienceExperiment
         {
             if (vessel.altitude <= vessel.orbit.referenceBody.atmosphereDepth)
                 return true;
+
             msg += "flying, ";
         }
 
@@ -48,6 +51,7 @@ public class LTechScienceBase : ModuleScienceExperiment
         {
             if (vessel.altitude > vessel.orbit.referenceBody.atmosphereDepth)
                 return true;
+
             msg += "in space, ";
         }
 
@@ -55,18 +59,18 @@ public class LTechScienceBase : ModuleScienceExperiment
         return false;
     }
 
-    public PartResource getResource(string name)
+    public PartResource GetResource(string name)
     {
-        PartResourceList resourceList = this.part.Resources;
+        PartResourceList resourceList = part.Resources;
         return resourceList.list.Find(delegate (PartResource cur)
         {
             return (cur.resourceName == name);
         });
     }
 
-    public int getResourceAmount(string name)
+    public int GetResourceAmount(string name)
     {
-        PartResource res = getResource(name);
+        PartResource res = GetResource(name);
 
         if (res == null)
             return 0;

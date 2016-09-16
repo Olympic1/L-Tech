@@ -72,7 +72,7 @@ This work is licensed under the MIT License.
 
 [GH:url]: https://github.com/Olympic1/L-Tech/releases
 [GH:logo]: http://i59.tinypic.com/2i11u2d.jpg
-[DB:url]: https://www.dropbox.com/s/e7hjvnr0xahyhy9/LTechRevived.zip?dl=0
+[DB:url]: https://www.dropbox.com/s/9037qx9q1o2ysn9/L-Tech_Scientific_Industries_Continued-v0.4.0.0.zip?dl=0
 [DB:logo]: http://i60.tinypic.com/70jj43.jpg
 [SD:url]: https://spacedock.info/mod/227
 [SD:logo]: http://i65.tinypic.com/ot0ks9.jpg

@@ -135,6 +135,3 @@ $RECYCLE.BIN/
 
 # Mac crap
 .DS_Store
-
-# Ignore folder
-Source/OUTPUT

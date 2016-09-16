@@ -1,0 +1,21 @@
+v0.4.0
+* Updated for KSP 1.2 pre
+* New folder structure
+* Updated from KAS to KIS
+* Update cfg's
+  * Updated mass
+  * Used 4 man internal to prevent errors
+  * Added 1.2 modules
+  * Added bulkheadProfiles
+  * Added tags
+* Complete rewrite of code
+  * Merged LtToolbar into LtScience
+  * Dropped Toolbar dependency
+  * Ability to switch between Blizzy and Stock Toolbar
+  * Hovering over options shows tooltips
+  * Better logging
+  * Cameras take screenshots faster
+  * Screenshots now save in Screenshots folder
+  * Ability to hide UI on screenshot
+  * Ability to save screenshots as png or jpg
+  * Prep for Life Support options

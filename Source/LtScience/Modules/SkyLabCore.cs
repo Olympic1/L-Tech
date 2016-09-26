@@ -54,22 +54,22 @@ namespace LtScience.Modules
         {
             if (InstalledMods.IsTacInstalled)
             {
-                Util.LogMessage("TAC Life Support is installed. Use Food as resource.", Util.LogType.Info);
+                //Util.LogMessage("TAC Life Support is installed. Use Food as resource.", Util.LogType.Info);
                 // Generate Insight using Food
             }
             else if (InstalledMods.IsUsiInstalled)
             {
-                Util.LogMessage("USI Life Support is installed. Use Food or Supplies as resource.", Util.LogType.Info);
+                //Util.LogMessage("USI Life Support is installed. Use Food or Supplies as resource.", Util.LogType.Info);
                 // Generate Insight using Food or Supplies
             }
             else if (InstalledMods.IsSnacksInstalled)
             {
-                Util.LogMessage("Snacks is installed. Use Snacks as resource.", Util.LogType.Info);
+                //Util.LogMessage("Snacks is installed. Use Snacks as resource.", Util.LogType.Info);
                 // Generate Insight using Snacks
             }
             else
             {
-                Util.LogMessage("No Life Support is installed. Use magical unicorns as resource.", Util.LogType.Info);
+                //Util.LogMessage("No Life Support is installed. Use magical unicorns as resource.", Util.LogType.Info);
                 // Just generate Insight
             }
 

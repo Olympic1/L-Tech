@@ -5,3 +5,4 @@ v0.4.1
 * Removed unused code
 * Updated acces modifiers
 * Fixed possible bug that prevented generating Insight
+* Comment code that spammed log

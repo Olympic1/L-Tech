@@ -37,10 +37,10 @@ namespace LtScience
         internal static bool ShowUi = true;
 
         // Makes instance available via reflection
-        public static LtAddon Instance
+        private static LtAddon Instance
         {
             get;
-            private set;
+            set;
         }
 
         #endregion
@@ -306,7 +306,7 @@ namespace LtScience
 
         #region GUI Methods
 
-        internal void Display()
+        private void Display()
         {
             string step = "";
             try
@@ -348,7 +348,7 @@ namespace LtScience
                 position.y = Screen.height - position.height;
         }
 
-        internal static void SetupGuiStyles()
+        private static void SetupGuiStyles()
         {
             if (WindowStyle != null)
                 return;
@@ -450,7 +450,7 @@ namespace LtScience
 
         #region Action Methods
 
-        internal static bool ActivateBlizzyToolBar()
+        private static bool ActivateBlizzyToolBar()
         {
             if (!LtSettings.enableBlizzyToolbar)
                 return false;

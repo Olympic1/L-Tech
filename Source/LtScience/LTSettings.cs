@@ -38,10 +38,7 @@ namespace LtScience
 
         internal static bool convertToJpg;
         internal static bool keepOriginalPng;
-
         internal static int jpgQuality = 75;
-        internal const int minJpgQuality = 0;
-        internal const int maxJpgQuality = 100;
 
         internal static bool showToolTips = true;
 

@@ -7,7 +7,7 @@ namespace LtScience.Windows
 {
     public class WindowSkyLab : MonoBehaviour
     {
-        internal const string title = "SkyLab Experiments";
+        private const string title = "SkyLab Experiments";
         internal static Rect position = new Rect(20, 60, 0, 0);
         internal static bool showWindow;
 
@@ -56,7 +56,7 @@ namespace LtScience.Windows
             return true;
         }
 
-        internal void Display(int windowId)
+        private void Display(int windowId)
         {
             try
             {

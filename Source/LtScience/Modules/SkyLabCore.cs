@@ -101,7 +101,7 @@ namespace LtScience.Modules
             UpdateStatus();
         }
 
-        [KSPEvent(guiActive = true, guiName = "Start research", active = true)]
+        [KSPEvent(guiActive = true, guiName = "Start research (LT)", active = true)]
         private void StartResearch()
         {
             if (part.protoModuleCrew.Count < minimumCrew)
@@ -117,7 +117,7 @@ namespace LtScience.Modules
             UpdateStatus();
         }
 
-        [KSPEvent(guiActive = true, guiName = "Stop research", active = true)]
+        [KSPEvent(guiActive = true, guiName = "Stop research (LT)", active = true)]
         private void StopResearch()
         {
             doResearch = false;
@@ -126,19 +126,19 @@ namespace LtScience.Modules
             UpdateStatus();
         }
 
-        [KSPAction("Activate Lab")]
+        [KSPAction("Activate Lab (LT)")]
         public void StartResearchingAction(KSPActionParam param)
         {
             StartResearch();
         }
 
-        [KSPAction("Deactivate Lab")]
+        [KSPAction("Deactivate Lab (LT)")]
         public void StopGeneratingAction(KSPActionParam param)
         {
             StopResearch();
         }
 
-        [KSPAction("Toggle Lab")]
+        [KSPAction("Toggle Lab (LT)")]
         public void ToggleResearchAction(KSPActionParam param)
         {
             if (doResearch)

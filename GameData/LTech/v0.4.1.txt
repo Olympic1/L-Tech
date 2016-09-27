@@ -1,0 +1,7 @@
+v0.4.1
+* Updated for latest KSP 1.2
+* Added abbreviation and hsp to resources
+* Fixed TweakScale for airbrake
+* Removed unused code
+* Updated acces modifiers
+* Fixed possible bug that prevented generating Insight

@@ -15,8 +15,8 @@ namespace LtScience.Windows
 
         // Tooltips
         internal static string toolTip = "";
-        internal static bool toolTipActive;
-        internal static bool showToolTips = true;
+        private static bool toolTipActive;
+        private static bool showToolTips = true;
         private static bool _canShowToolTips = true;
 
         // GUI tooltip and label support

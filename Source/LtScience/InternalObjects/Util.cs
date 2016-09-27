@@ -96,8 +96,6 @@ namespace LtScience.InternalObjects
                 if (FlightGlobals.ActiveVessel != null)
                     values += "FlightGlobals.ActiveVessel.vesselType = " + FlightGlobals.ActiveVessel.vesselType + "\r\n";
 
-                values += "CameraManager.Instance.currentCameraMode != CameraManager.CameraMode.IVA = " + (CameraManager.Instance.currentCameraMode != CameraManager.CameraMode.IVA);
-
                 LogMessage(string.Format("Util.CanShowSkyLab (repeating error). Error: {0} \r\n\r\n{1}\r\n\r\nValues: {2}", ex.Message, ex.StackTrace, values), LogType.Error);
                 return false;
             }

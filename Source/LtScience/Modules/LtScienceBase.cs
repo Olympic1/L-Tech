@@ -61,40 +61,40 @@ namespace LtScience.Modules
             return false;
         }
 
-        private PartResource GetResource(string name)
+        private PartResource GetResource(string res)
         {
             PartResourceList resourceList = part.Resources;
 
-            return resourceList.Get(name);
+            return resourceList.Get(res);
         }
 
-        public int GetResourceAmount(string name)
+        public int GetResourceAmount(string res)
         {
-            PartResource res = GetResource(name);
+            PartResource resource = GetResource(res);
 
-            if (res == null)
+            if (resource == null)
                 return 0;
-
-            return (int)Math.Floor(res.amount);
+            
+            return (int)Math.Floor(resource.amount);
         }
 
         // Checks if a craft has an amount of resources without actually taking them.
-        public bool LtsHasResources(string name, int amount)
+        public bool LtsHasResources(string res, int amount)
         {
-            _resource = (int)part.RequestResource(name, amount);
-            part.RequestResource(name, -(_resource));
+            _resource = (int)part.RequestResource(res, amount);
+            part.RequestResource(res, -(_resource));
             return (_resource == amount);
         }
 
         // Some ease function I guess... whatever
-        protected bool LtsUseResources(string name, int amount)
+        protected bool LtsUseResources(string res, int amount)
         {
-            _resource = (int)part.RequestResource(name, amount);
+            _resource = (int)part.RequestResource(res, amount);
 
             if (_resource == amount)
                 return true;
 
-            part.RequestResource(name, -(_resource));
+            part.RequestResource(res, -(_resource));
             return false;
         }
     }

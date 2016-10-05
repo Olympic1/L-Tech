@@ -74,7 +74,7 @@ namespace LtScience.Modules
                 Camera.main.nearClipPlane = _origClip;
 
                 if (FlightGlobals.ActiveVessel != null && HighLogic.LoadedSceneIsFlight)
-                    _cam.setTarget(FlightGlobals.ActiveVessel.transform, false);
+                    _cam.SetTarget(FlightGlobals.ActiveVessel.transform, FlightCamera.TargetMode.Transform);
 
                 _origParent = null;
 
@@ -322,7 +322,7 @@ namespace LtScience.Modules
 
             if ((_origParent != null) && (_cam != null) && ltCamActive)
             {
-                _cam.setTarget(null, false);
+                _cam.SetTarget(null, FlightCamera.TargetMode.Transform);
                 _cam.transform.parent = (cameraTransformName.Length > 0) ? part.FindModelTransform(cameraTransformName) : part.transform;
                 _cam.transform.localPosition = cameraPosition;
                 _cam.transform.localRotation = Quaternion.LookRotation(cameraForward, cameraUp);

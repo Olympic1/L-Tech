@@ -74,7 +74,7 @@ namespace LtScience.Modules
 
             if (resource == null)
                 return 0;
-            
+
             return (int)Math.Floor(resource.amount);
         }
 

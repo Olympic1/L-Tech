@@ -11,17 +11,26 @@ namespace LtScience.APIClients
 
         internal static bool IsSnacksInstalled
         {
-            get { return IsModInstalled("Snacks"); }
+            get
+            {
+                return IsModInstalled("Snacks");
+            }
         }
 
         internal static bool IsTacInstalled
         {
-            get { return IsModInstalled("TacLifeSupport"); }
+            get
+            {
+                return IsModInstalled("TacLifeSupport");
+            }
         }
 
         internal static bool IsUsiInstalled
         {
-            get { return IsModInstalled("USILifeSupport"); }
+            get
+            {
+                return IsModInstalled("USILifeSupport");
+            }
         }
 
         // Methods

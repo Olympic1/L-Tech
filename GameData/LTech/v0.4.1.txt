@@ -3,6 +3,9 @@ v0.4.1
 * Added abbreviation and hsp to resources
 * Fixed TweakScale for airbrake
 * Removed unused code
-* Updated acces modifiers
+* Updated access modifiers
 * Fixed possible bug that prevented generating Insight
 * Comment code that spammed log
+* Updated ToolbarWrapper
+* Added ModuleManager references back in
+* Added Alternate Resource Panel icons

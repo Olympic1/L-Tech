@@ -1,3 +1,19 @@
+/*
+ * L-Tech Scientific Industries Continued
+ * Copyright © 2015-2016, Arne Peirs (Olympic1)
+ * Copyright © 2016, linuxgurugamer
+ * 
+ * Kerbal Space Program is Copyright © 2011-2016 Squad. See http://kerbalspaceprogram.com/.
+ * This project is in no way associated with nor endorsed by Squad.
+ * 
+ * This file is part of Olympic1's L-Tech (Continued). Original author of L-Tech is 'ludsoe' on the KSP Forums.
+ * This file was not part of the original L-Tech but was written by Arne Peirs.
+ * Copyright © 2015-2016, Arne Peirs (Olympic1)
+ * 
+ * Continues to be licensed under the MIT License.
+ * See <https://opensource.org/licenses/MIT> for full details.
+ */
+
 using KSP.UI.Dialogs;
 using LtScience.Windows;
 using System;
@@ -96,7 +112,7 @@ namespace LtScience.InternalObjects
                 if (FlightGlobals.ActiveVessel != null)
                     values += "FlightGlobals.ActiveVessel.vesselType = " + FlightGlobals.ActiveVessel.vesselType + "\r\n";
 
-                LogMessage(string.Format("Util.CanShowSkyLab (repeating error). Error: {0} \r\n\r\n{1}\r\n\r\nValues: {2}", ex.Message, ex.StackTrace, values), LogType.Error);
+                LogMessage($"Util.CanShowSkyLab (repeating error). Error: {ex.Message} \r\n\r\n{ex.StackTrace}\r\n\r\nValues: {values}", LogType.Error);
                 return false;
             }
         }

@@ -1,4 +1,20 @@
-﻿using LtScience.APIClients;
+﻿/*
+ * L-Tech Scientific Industries Continued
+ * Copyright © 2015-2016, Arne Peirs (Olympic1)
+ * Copyright © 2016, linuxgurugamer
+ * 
+ * Kerbal Space Program is Copyright © 2011-2016 Squad. See http://kerbalspaceprogram.com/.
+ * This project is in no way associated with nor endorsed by Squad.
+ * 
+ * This file is part of Olympic1's L-Tech (Continued). Original author of L-Tech is 'ludsoe' on the KSP Forums.
+ * This file was not part of the original L-Tech but was written by Arne Peirs.
+ * Copyright © 2015-2016, Arne Peirs (Olympic1)
+ * 
+ * Continues to be licensed under the MIT License.
+ * See <https://opensource.org/licenses/MIT> for full details.
+ */
+
+using LtScience.APIClients;
 using LtScience.InternalObjects;
 using System;
 using System.Globalization;
@@ -84,7 +100,7 @@ namespace LtScience.Windows
             }
             catch (Exception ex)
             {
-                Util.LogMessage(string.Format("WindowSettings.Display. Error: {0} \r\n\r\n{1}", ex.Message, ex.StackTrace), Util.LogType.Error);
+                Util.LogMessage($"WindowSettings.Display. Error: {ex.Message} \r\n\r\n{ex.StackTrace}", Util.LogType.Error);
             }
         }
 
@@ -210,7 +226,7 @@ namespace LtScience.Windows
 
                 // Camera Resolution
                 _label = "Camera Resolution:  ";
-                _label += string.Format("{0:0}", 100 * LtSettings.resolution) + " %";
+                _label += $"{100 * LtSettings.resolution:0}" + " %";
                 _toolTip = "Sets the resolution of the screenshot. Default is current resolution";
                 _toolTip += "\r\nThe resolution is measured in game window resolutions.";
                 _guiLabel = new GUIContent(_label, _toolTip);
@@ -234,7 +250,7 @@ namespace LtScience.Windows
 
                 // Camera Shuttertime
                 _label = "Camera Shuttertime:  ";
-                _label += string.Format("{0:0.#}", LtSettings.shuttertime) + " sec";
+                _label += $"{LtSettings.shuttertime:0.#}" + " sec";
                 _toolTip = "Sets the amount the game 'freezes' in camera view when taking a screenshot.";
                 _toolTip += "\r\nThe shuttertime is timed in real time seconds.";
                 _guiLabel = new GUIContent(_label, _toolTip);
@@ -258,7 +274,7 @@ namespace LtScience.Windows
             }
             catch (Exception ex)
             {
-                Util.LogMessage(string.Format("WindowSettings.DisplaySettings. Error: {0} \r\n\r\n{1}", ex.Message, ex.StackTrace), Util.LogType.Error);
+                Util.LogMessage($"WindowSettings.DisplaySettings. Error: {ex.Message} \r\n\r\n{ex.StackTrace}", Util.LogType.Error);
             }
         }
     }

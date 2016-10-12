@@ -1,4 +1,20 @@
-﻿using LtScience.InternalObjects;
+﻿/*
+ * L-Tech Scientific Industries Continued
+ * Copyright © 2015-2016, Arne Peirs (Olympic1)
+ * Copyright © 2016, linuxgurugamer
+ * 
+ * Kerbal Space Program is Copyright © 2011-2016 Squad. See http://kerbalspaceprogram.com/.
+ * This project is in no way associated with nor endorsed by Squad.
+ * 
+ * This file is part of Olympic1's L-Tech (Continued). Original author of L-Tech is 'ludsoe' on the KSP Forums.
+ * This file was part of the original L-Tech and was written by ludsoe.
+ * Copyright © 2015, ludsoe
+ * 
+ * Continues to be licensed under the MIT License.
+ * See <https://opensource.org/licenses/MIT> for full details.
+ */
+
+using LtScience.InternalObjects;
 using System;
 
 namespace LtScience.Modules
@@ -82,8 +98,8 @@ namespace LtScience.Modules
         public bool LtsHasResources(string res, int amount)
         {
             _resource = (int)part.RequestResource(res, amount);
-            part.RequestResource(res, -(_resource));
-            return (_resource == amount);
+            part.RequestResource(res, -_resource);
+            return _resource == amount;
         }
 
         // Some ease function I guess... whatever
@@ -94,7 +110,7 @@ namespace LtScience.Modules
             if (_resource == amount)
                 return true;
 
-            part.RequestResource(res, -(_resource));
+            part.RequestResource(res, -_resource);
             return false;
         }
     }

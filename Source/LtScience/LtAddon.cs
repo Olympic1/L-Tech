@@ -1,4 +1,20 @@
-﻿using KSP.UI.Screens;
+﻿/*
+ * L-Tech Scientific Industries Continued
+ * Copyright © 2015-2016, Arne Peirs (Olympic1)
+ * Copyright © 2016, linuxgurugamer
+ * 
+ * Kerbal Space Program is Copyright © 2011-2016 Squad. See http://kerbalspaceprogram.com/.
+ * This project is in no way associated with nor endorsed by Squad.
+ * 
+ * This file is part of Olympic1's L-Tech (Continued). Original author of L-Tech is 'ludsoe' on the KSP Forums.
+ * This file was not part of the original L-Tech but was written by Arne Peirs.
+ * Copyright © 2015-2016, Arne Peirs (Olympic1)
+ * 
+ * Continues to be licensed under the MIT License.
+ * See <https://opensource.org/licenses/MIT> for full details.
+ */
+
+using KSP.UI.Screens;
 using LtScience.APIClients;
 using LtScience.InternalObjects;
 using LtScience.Windows;
@@ -146,8 +162,7 @@ namespace LtScience
                 }
                 else
                 {
-                    if (_blizzyButton != null)
-                        _blizzyButton.Destroy();
+                    _blizzyButton?.Destroy();
                 }
             }
             catch (Exception ex)
@@ -180,7 +195,7 @@ namespace LtScience
             }
             catch (Exception ex)
             {
-                Util.LogMessage(string.Format("LTAddon.Update (repeating error). Error: {0} \r\n\r\n{1}", ex.Message, ex.StackTrace), Util.LogType.Error);
+                Util.LogMessage($"LTAddon.Update (repeating error). Error: {ex.Message} \r\n\r\n{ex.StackTrace}", Util.LogType.Error);
             }
         }
 
@@ -323,7 +338,7 @@ namespace LtScience
             }
             catch (Exception ex)
             {
-                Util.LogMessage(string.Format("LTAddon.Display at or near step: " + step + ". Error: {0} \r\n\r\n{1}", ex.Message, ex.StackTrace), Util.LogType.Error);
+                Util.LogMessage($"LTAddon.Display at or near step: {step}. Error: {ex.Message} \r\n\r\n{ex.StackTrace}", Util.LogType.Error);
             }
         }
 

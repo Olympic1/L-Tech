@@ -1,4 +1,20 @@
-﻿using LtScience.InternalObjects;
+﻿/*
+ * L-Tech Scientific Industries Continued
+ * Copyright © 2015-2016, Arne Peirs (Olympic1)
+ * Copyright © 2016, linuxgurugamer
+ * 
+ * Kerbal Space Program is Copyright © 2011-2016 Squad. See http://kerbalspaceprogram.com/.
+ * This project is in no way associated with nor endorsed by Squad.
+ * 
+ * This file is part of Olympic1's L-Tech (Continued). Original author of L-Tech is 'ludsoe' on the KSP Forums.
+ * This file was not part of the original L-Tech but was written by Arne Peirs.
+ * Copyright © 2015-2016, Arne Peirs (Olympic1)
+ * 
+ * Continues to be licensed under the MIT License.
+ * See <https://opensource.org/licenses/MIT> for full details.
+ */
+
+using LtScience.InternalObjects;
 using LtScience.Modules;
 using LtScience.Windows;
 using System;
@@ -16,8 +32,8 @@ namespace LtScience
 
         private static ConfigNode settings;
 
-        private static readonly string settingsPath = string.Format("{0}GameData/LTech/Plugins/PluginData", KSPUtil.ApplicationRootPath);
-        private static readonly string settingsFile = string.Format("{0}/Settings.cfg", settingsPath);
+        private static readonly string settingsPath = $"{KSPUtil.ApplicationRootPath}GameData/LTech/Plugins/PluginData";
+        private static readonly string settingsFile = $"{settingsPath}/Settings.cfg";
 
         // This value is assigned from AssemblyInfo.cs
         internal static readonly string curVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
@@ -102,8 +118,8 @@ namespace LtScience
                 WriteRectangle(windowsNode, "SkylabPosition", WindowSkyLab.position);
 
                 // Save settings
-                WriteValue(settingsNode, "Resolution", string.Format("{0:0}", resolution));
-                WriteValue(settingsNode, "Shuttertime", string.Format("{0:0.#}", shuttertime));
+                WriteValue(settingsNode, "Resolution", $"{resolution:0}");
+                WriteValue(settingsNode, "Shuttertime", $"{shuttertime:0.#}");
 
                 WriteValue(settingsNode, "EnableBlizzyToolbar", enableBlizzyToolbar);
                 WriteValue(settingsNode, "HideUIOnScreenshot", hideUiOnScreenshot);

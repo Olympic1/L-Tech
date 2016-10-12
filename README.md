@@ -21,7 +21,7 @@ L-Tech Sciencific Industries is a mod designed to add to the career mode of Kerb
 * [Module Manager](http://forum.kerbalspaceprogram.com/index.php?/topic/50533-*)
 
 #### Supported Mods
-* [Connected Living Spaces](http://forum.kerbalspaceprogram.com/index.php?/topic/109972-*)
+* [Connected Living Space](http://forum.kerbalspaceprogram.com/index.php?/topic/109972-*)
 * [HullCam VDS](http://forum.kerbalspaceprogram.com/index.php?/topic/145633-*)
 * [Kerbal Inventory System](http://forum.kerbalspaceprogram.com/index.php?/topic/101928-*)
 * [RasterPropMonitor](http://forum.kerbalspaceprogram.com/index.php?/topic/105821-*)
@@ -43,6 +43,8 @@ L-Tech Sciencific Industries is a mod designed to add to the career mode of Kerb
 #### Downloads
 * [![][GH:logo]][GH:url]
 * [![][DB:logo]][DB:url]
+* [![][OD:logo]][OD:url]
+* [![][BX:logo]][BX:url]
 * [![][SD:logo]][SD:url]
 
 ### License
@@ -63,7 +65,12 @@ This work is licensed under the MIT License.
 
 [GH:url]: https://github.com/Olympic1/L-Tech/releases
 [GH:logo]: http://i59.tinypic.com/2i11u2d.jpg
-[DB:url]: https://www.dropbox.com/s/9037qx9q1o2ysn9/L-Tech_Scientific_Industries_Continued-v0.4.0.0.zip?dl=0
+[DB:url]: https://www.dropbox.com/s/ahydhrgppmap680/L-Tech_Scientific_Industries_Continued-v0.4.1.0.zip?dl=0
 [DB:logo]: http://i60.tinypic.com/70jj43.jpg
+[OD:url]: https://1drv.ms/u/s!AlH25jPUX2gF2l0A4LoOixIbBWei
+[OD:logo]: http://i67.tinypic.com/169lvds.png
+[BX:url]: https://app.box.com/s/601cn68eqj2x79uq651d4sgtnkpu940z
+[BX:logo]: http://i68.tinypic.com/2zxur92.png
+
 [SD:url]: https://spacedock.info/mod/227
 [SD:logo]: http://i65.tinypic.com/ot0ks9.jpg

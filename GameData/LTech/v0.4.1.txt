@@ -1,11 +1,13 @@
-v0.4.1
-* Updated for latest KSP 1.2
+Changes since v4.0
+------------------
+* Updated for KSP 1.2
 * Added abbreviation and hsp to resources
 * Fixed TweakScale for airbrake
+* Fixed loading RPM modules when not installed
 * Removed unused code
 * Updated access modifiers
 * Fixed possible bug that prevented generating Insight
 * Comment code that spammed log
 * Updated ToolbarWrapper
-* Added ModuleManager references back in
 * Added Alternate Resource Panel icons
+* Added license into source files

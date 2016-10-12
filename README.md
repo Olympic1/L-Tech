@@ -27,27 +27,18 @@ L-Tech Sciencific Industries is a mod designed to add to the career mode of Kerb
 * [RasterPropMonitor](http://forum.kerbalspaceprogram.com/index.php?/topic/105821-*)
 * [Snacks](https://github.com/Angel-125/Snacks/releases)
 
-#### New in v0.4.0
-* Updated for KSP 1.2 pre
-* New folder structure
-* Updated from KAS to KIS
-* Update cfg's
-  * Updated mass
-  * Used 4 man internal to prevent errors
-  * Added 1.2 modules
-  * Added bulkheadProfiles
-  * Added tags
-* Complete rewrite of code
-  * Merged LtToolbar into LtScience
-  * Dropped Toolbar dependency
-  * Ability to switch between Blizzy and Stock Toolbar
-  * Hovering over options shows tooltips
-  * Better logging
-  * Cameras take screenshots faster
-  * Screenshots now save in Screenshots folder
-  * Ability to hide UI on screenshot
-  * Ability to save screenshots as png or jpg
-  * Prep for Life Support options
+#### New in v0.4.1
+* Updated for KSP 1.2
+* Added abbreviation and hsp to resources
+* Fixed TweakScale for airbrake
+* Fixed loading RPM modules when not installed
+* Removed unused code
+* Updated access modifiers
+* Fixed possible bug that prevented generating Insight
+* Comment code that spammed log
+* Updated ToolbarWrapper
+* Added Alternate Resource Panel icons
+* Added license into source files
 
 #### Downloads
 * [![][GH:logo]][GH:url]

@@ -135,3 +135,4 @@ $RECYCLE.BIN/
 
 # Mac crap
 .DS_Store
+*.svg

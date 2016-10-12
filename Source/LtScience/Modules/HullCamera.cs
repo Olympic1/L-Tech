@@ -1,4 +1,20 @@
-﻿using LtScience.InternalObjects;
+﻿/*
+ * L-Tech Scientific Industries Continued
+ * Copyright © 2015-2016, Arne Peirs (Olympic1)
+ * Copyright © 2016, linuxgurugamer
+ * 
+ * Kerbal Space Program is Copyright © 2011-2016 Squad. See http://kerbalspaceprogram.com/.
+ * This project is in no way associated with nor endorsed by Squad.
+ * 
+ * This file is part of Olympic1's L-Tech (Continued). Original author of L-Tech is 'ludsoe' on the KSP Forums.
+ * This file was part of the original L-Tech and was written by ludsoe.
+ * Copyright © 2015, ludsoe
+ * 
+ * Continues to be licensed under the MIT License.
+ * See <https://opensource.org/licenses/MIT> for full details.
+ */
+
+using LtScience.InternalObjects;
 using System;
 using System.IO;
 using UnityEngine;
@@ -50,7 +66,7 @@ namespace LtScience.Modules
         private static float _origFoV;
         private static float _origClip;
 
-        private static readonly string folder = string.Format("{0}Screenshots/LTech/", KSPUtil.ApplicationRootPath);
+        private static readonly string folder = $"{KSPUtil.ApplicationRootPath}Screenshots/LTech/";
 
         private int _cnt;
         private string _screenshotFile = "";
@@ -74,7 +90,7 @@ namespace LtScience.Modules
                 Camera.main.nearClipPlane = _origClip;
 
                 if (FlightGlobals.ActiveVessel != null && HighLogic.LoadedSceneIsFlight)
-                    _cam.setTarget(FlightGlobals.ActiveVessel.transform, false);
+                    _cam.SetTargetTransform(FlightGlobals.ActiveVessel.transform);
 
                 _origParent = null;
 
@@ -112,7 +128,7 @@ namespace LtScience.Modules
                 return;
             }
 
-            //print("Detecting anomalies...");
+            print("Detecting anomalies...");
             PQSCity[] planetAnomalies = vessel.mainBody.GetComponentsInChildren<PQSCity>(true);
 
             double nearest = double.PositiveInfinity;
@@ -121,7 +137,7 @@ namespace LtScience.Modules
             // Find the closest anomaly
             foreach (PQSCity anom in planetAnomalies)
             {
-                //print("Anomaly: " + anom.name);
+                print("Anomaly: " + anom.name);
                 double dist = (anom.transform.position - part.transform.position).magnitude;
 
                 if (dist < nearest)
@@ -138,24 +154,24 @@ namespace LtScience.Modules
 
             if (anomaly != null)
             {
-                //print("Closest anomaly is: " + anomaly.name + " and is " + nearest + " away!");
+                print("Closest anomaly is: " + anomaly.name + " and is " + nearest + " m away!");
 
                 if (nearest < 2500)
                 {
                     double targetAngleTo = Vector3d.Dot(part.transform.up + cameraForward, (anomaly.transform.position - part.transform.position).normalized);
-                    //print("Angle: " + targetAngleTo);
+                    print("Angle: " + targetAngleTo + " degrees");
 
                     if (targetAngleTo > 1)
                     {
                         expId = vessel.mainBody.name + "-" + anomaly.name;
-                        expValue = (float)((Math.Abs(2500 - nearest) * (targetAngleTo - 1)) / 100) * picScienceVal;
+                        expValue = (float)(Math.Abs(2500 - nearest) * (targetAngleTo - 1) / 100) * picScienceVal;
                         expName = anomaly.name;
                         expData = 20f * picDataVal;
                     }
                 }
             }
 
-            //print(ExpName + " is worth: " + ExpValue);
+            print(expName + " is worth: " + expValue);
 
             experiment.id = specialExperimentName + expId;
             experiment.experimentTitle = specialExperimentTitle.Replace("#Anon#", expName);
@@ -243,7 +259,7 @@ namespace LtScience.Modules
 
         #region KSP Events
 
-        [KSPEvent(guiActive = true, guiName = "Take RL picture")]
+        //[KSPEvent(guiActive = true, guiName = "Take RL picture")]
         public void ActivateCameraEvent()
         {
             ActivateCamera();
@@ -259,7 +275,7 @@ namespace LtScience.Modules
 
         #region KSP Actions
 
-        [KSPAction("Take RL picture")]
+        //[KSPAction("Take RL picture")]
         public void ActivateCameraAction(KSPActionParam ap)
         {
             ActivateCamera();
@@ -322,8 +338,8 @@ namespace LtScience.Modules
 
             if ((_origParent != null) && (_cam != null) && ltCamActive)
             {
-                _cam.setTarget(null, false);
-                _cam.transform.parent = (cameraTransformName.Length > 0) ? part.FindModelTransform(cameraTransformName) : part.transform;
+                _cam.SetTargetNone();
+                _cam.transform.parent = cameraTransformName.Length > 0 ? part.FindModelTransform(cameraTransformName) : part.transform;
                 _cam.transform.localPosition = cameraPosition;
                 _cam.transform.localRotation = Quaternion.LookRotation(cameraForward, cameraUp);
                 Camera.main.nearClipPlane = cameraClip;

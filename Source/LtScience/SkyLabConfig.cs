@@ -1,4 +1,20 @@
-﻿using LtScience.InternalObjects;
+﻿/*
+ * L-Tech Scientific Industries Continued
+ * Copyright © 2015-2016, Arne Peirs (Olympic1)
+ * Copyright © 2016, linuxgurugamer
+ * 
+ * Kerbal Space Program is Copyright © 2011-2016 Squad. See http://kerbalspaceprogram.com/.
+ * This project is in no way associated with nor endorsed by Squad.
+ * 
+ * This file is part of Olympic1's L-Tech (Continued). Original author of L-Tech is 'ludsoe' on the KSP Forums.
+ * This file was part of the original L-Tech and was written by ludsoe.
+ * Copyright © 2015, ludsoe
+ * 
+ * Continues to be licensed under the MIT License.
+ * See <https://opensource.org/licenses/MIT> for full details.
+ */
+
+using LtScience.InternalObjects;
 using LtScience.Modules;
 using LtScience.Windows;
 using System;
@@ -11,8 +27,8 @@ namespace LtScience
     {
         private static ConfigNode settings;
 
-        private static readonly string exPath = string.Format("{0}GameData/LTech/Plugins/PluginData", KSPUtil.ApplicationRootPath);
-        private static readonly string exFile = string.Format("{0}/SkyLabExperiments.cfg", exPath);
+        private static readonly string exPath = $"{KSPUtil.ApplicationRootPath}GameData/LTech/Plugins/PluginData";
+        private static readonly string exFile = $"{exPath}/SkyLabExperiments.cfg";
 
         public WindowSkyLab LabGui;
         public static SkyLabExperimentData[] Experiments;
@@ -48,7 +64,7 @@ namespace LtScience
                     data.Id = node.GetValue("ID");
                     data.Name = node.GetValue("Name");
 
-                    Util.LogMessage(string.Format("- ID: {0} - Name: {1}", data.Id, data.Name), Util.LogType.Info);
+                    Util.LogMessage($"- ID: {data.Id} - Name: {data.Name}", Util.LogType.Info);
 
                     data.ReqResource = node.GetValue("ReqResource");
                     data.ReqAmount = int.Parse(node.GetValue("ReqAmount"));
@@ -70,7 +86,7 @@ namespace LtScience
                 }
             }
 
-            Util.LogMessage(string.Format("Successfully added {0} new experiments", num), Util.LogType.Info);
+            Util.LogMessage($"Successfully added {num} new experiments", Util.LogType.Info);
         }
 
         public void Awake()

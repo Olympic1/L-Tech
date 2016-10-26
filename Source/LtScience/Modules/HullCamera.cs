@@ -43,6 +43,9 @@ namespace LtScience.Modules
         [KSPField]
         public float picDataVal = 1f;
 
+        [KSPField]
+        public float cameraFoV = 60;
+
         [KSPField(isPersistant = false)]
         public float cameraClip = 0.01f;
 
@@ -63,6 +66,8 @@ namespace LtScience.Modules
 
         private static FlightCamera _cam;
         private static Transform _origParent;
+        private static Quaternion _origRotation = Quaternion.identity;
+        private static Vector3 _origPosition = Vector3.zero;
         private static float _origFoV;
         private static float _origClip;
 
@@ -82,12 +87,25 @@ namespace LtScience.Modules
 
         #region Methods
 
+        private static void SaveMainCamera()
+        {
+            _origParent = _cam.transform.parent;
+            _origClip = Camera.main.nearClipPlane;
+            _origFoV = Camera.main.fieldOfView;
+            _origPosition = _cam.transform.localPosition;
+            _origRotation = _cam.transform.localRotation;
+        }
+
         private static void ToMainCamera()
         {
             if ((_cam != null) && (_cam.transform != null))
             {
                 _cam.transform.parent = _origParent;
+                _cam.transform.localPosition = _origPosition;
+                _cam.transform.localRotation = _origRotation;
                 Camera.main.nearClipPlane = _origClip;
+                _cam.SetFoV(_origFoV);
+                _cam.ActivateUpdate();
 
                 if (FlightGlobals.ActiveVessel != null && HighLogic.LoadedSceneIsFlight)
                     _cam.SetTargetTransform(FlightGlobals.ActiveVessel.transform);
@@ -99,6 +117,14 @@ namespace LtScience.Modules
 
                 _currentCamera = null;
             }
+        }
+
+        private static void LeaveCamera()
+        {
+            if (_currentCamera == null)
+                return;
+
+            ToMainCamera();
         }
 
         private void ActivateCamera()
@@ -259,7 +285,7 @@ namespace LtScience.Modules
 
         #region KSP Events
 
-        //[KSPEvent(guiActive = true, guiName = "Take RL picture")]
+        [KSPEvent(guiActive = true, guiName = "Take RL picture")]
         public void ActivateCameraEvent()
         {
             ActivateCamera();
@@ -275,7 +301,7 @@ namespace LtScience.Modules
 
         #region KSP Actions
 
-        //[KSPAction("Take RL picture")]
+        [KSPAction("Take RL picture")]
         public void ActivateCameraAction(KSPActionParam ap)
         {
             ActivateCamera();
@@ -324,24 +350,33 @@ namespace LtScience.Modules
                 return;
 
             if (_cam == null)
+            {
                 _cam = FlightCamera.fetch;
+
+                // Just a safety check
+                if (_cam == null)
+                    return;
+            }
 
             if ((_cam != null) && (_origParent == null))
             {
-                _origParent = _cam.transform.parent;
-                _origClip = Camera.main.nearClipPlane;
-                _origFoV = Camera.main.fieldOfView;
+                SaveMainCamera();
             }
 
             if (ltCamActive && (part.State == PartStates.DEAD))
+            {
+                LeaveCamera();
                 CleanUp();
+            }
 
             if ((_origParent != null) && (_cam != null) && ltCamActive)
             {
                 _cam.SetTargetNone();
                 _cam.transform.parent = cameraTransformName.Length > 0 ? part.FindModelTransform(cameraTransformName) : part.transform;
+                _cam.DeactivateUpdate();
                 _cam.transform.localPosition = cameraPosition;
                 _cam.transform.localRotation = Quaternion.LookRotation(cameraForward, cameraUp);
+                _cam.SetFoV(cameraFoV);
                 Camera.main.nearClipPlane = cameraClip;
             }
 
@@ -362,8 +397,14 @@ namespace LtScience.Modules
 
         private void CleanUp()
         {
+            if (_currentCamera == this)
+                LeaveCamera();
+
             if (ltCamActive)
+            {
+                _currentCamera = null;
                 ToMainCamera();
+            }
         }
 
         public new void OnDestroy()

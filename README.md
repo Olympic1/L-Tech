@@ -27,18 +27,8 @@ L-Tech Sciencific Industries is a mod designed to add to the career mode of Kerb
 * [RasterPropMonitor](http://forum.kerbalspaceprogram.com/index.php?/topic/105821-*)
 * [Snacks](https://github.com/Angel-125/Snacks/releases)
 
-#### New in v0.4.1
-* Updated for KSP 1.2
-* Added abbreviation and hsp to resources
-* Fixed TweakScale for airbrake
-* Fixed loading RPM modules when not installed
-* Removed unused code
-* Updated access modifiers
-* Fixed possible bug that prevented generating Insight
-* Comment code that spammed log
-* Updated ToolbarWrapper
-* Added Alternate Resource Panel icons
-* Added license into source files
+#### New in v0.4.2
+* Fixed camera
 
 #### Downloads
 * [![][GH:logo]][GH:url]
@@ -65,11 +55,11 @@ This work is licensed under the MIT License.
 
 [GH:url]: https://github.com/Olympic1/L-Tech/releases
 [GH:logo]: http://i59.tinypic.com/2i11u2d.jpg
-[DB:url]: https://www.dropbox.com/s/ahydhrgppmap680/L-Tech_Scientific_Industries_Continued-v0.4.1.0.zip?dl=0
+[DB:url]: https://www.dropbox.com/s/b819xf178vi3fy3/L-Tech_Scientific_Industries_Continued-v0.4.2.0.zip?dl=0
 [DB:logo]: http://i60.tinypic.com/70jj43.jpg
-[OD:url]: https://1drv.ms/u/s!AlH25jPUX2gF2l0A4LoOixIbBWei
+[OD:url]: https://1drv.ms/u/s!AlH25jPUX2gF2l6i0u65dUsdQtCs
 [OD:logo]: http://i67.tinypic.com/169lvds.png
-[BX:url]: https://app.box.com/s/601cn68eqj2x79uq651d4sgtnkpu940z
+[BX:url]: https://app.box.com/s/lew4fv18r17ttwl4rv3nfh6ie2qo1r74
 [BX:logo]: http://i68.tinypic.com/2zxur92.png
 
 [SD:url]: https://spacedock.info/mod/227

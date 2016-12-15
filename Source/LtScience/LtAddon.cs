@@ -23,7 +23,7 @@ using UnityEngine;
 
 namespace LtScience
 {
-    [KSPAddon(KSPAddon.Startup.EveryScene, false)]
+    [KSPAddon(KSPAddon.Startup.FlightAndKSC, false)]
     public class LtAddon : MonoBehaviour
     {
         #region Properties
@@ -117,10 +117,13 @@ namespace LtScience
                 if (HighLogic.LoadedScene == GameScenes.SPACECENTER)
                     LtSettings.SaveSettings();
 
+                // Instantiate Event Handlers
+                GameEvents.onGameSceneSwitchRequested.Add(OnGameSceneSwitchRequested);
+
+                // If we are not in flight, the rest does not get done!
                 if (HighLogic.LoadedScene != GameScenes.FLIGHT)
                     return;
 
-                // Instantiate Event Handlers
                 GameEvents.onGameSceneLoadRequested.Add(OnGameSceneLoadRequested);
                 GameEvents.onShowUI.Add(OnShowUi);
                 GameEvents.onHideUI.Add(OnHideUi);
@@ -135,11 +138,10 @@ namespace LtScience
         {
             try
             {
-                if (HighLogic.LoadedScene == GameScenes.SPACECENTER || HighLogic.LoadedSceneIsFlight)
-                    WindowSettings.showWindow = WindowSkyLab.showWindow = false;
-
                 if (LtSettings.loaded)
                     LtSettings.SaveSettings();
+
+                GameEvents.onGameSceneSwitchRequested.Remove(OnGameSceneSwitchRequested);
 
                 GameEvents.onGameSceneLoadRequested.Remove(OnGameSceneLoadRequested);
                 GameEvents.onShowUI.Remove(OnShowUi);
@@ -191,7 +193,8 @@ namespace LtScience
         {
             try
             {
-                CheckForToolbarTypeToggle();
+                if (HighLogic.LoadedScene == GameScenes.SPACECENTER && HighLogic.LoadedSceneIsFlight)
+                    CheckForToolbarTypeToggle();
             }
             catch (Exception ex)
             {
@@ -203,6 +206,11 @@ namespace LtScience
         private void OnGameSceneLoadRequested(GameScenes requestedScene)
         {
             LtSettings.SaveSettings();
+        }
+
+        private void OnGameSceneSwitchRequested(GameEvents.FromToAction<GameScenes, GameScenes> sceneData)
+        {
+            WindowSettings.showWindow = WindowSkyLab.showWindow = false;
         }
 
         // Camera UI toggle handlers

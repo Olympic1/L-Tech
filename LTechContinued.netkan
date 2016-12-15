@@ -12,7 +12,7 @@
         "homepage": "http://forum.kerbalspaceprogram.com/index.php?/topic/49319-0240-l-tech-scientific-industries-v220/&page=15#comment-2824326",
         "spacedock": "https://spacedock.info/mod/227/L-Tech%20Scientific%20Industries%20Continued"
     },
-    "license"        : "MIT",
+    "license"         : "MIT",
     "x_netkan_force_v": true,
     "install" :
     [
@@ -32,5 +32,10 @@
         { "name" : "KIS" },
         { "name" : "RasterPropMonitor-Core" },
         { "name" : "TweakScale" }
+    ],
+    "conflicts":
+    [
+        { "name": "xScience" },
+        { "name": "KEI" }
     ]
 }

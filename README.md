@@ -1,5 +1,5 @@
 # L-Tech Scientific Industries Continued
-**This is a continuation of [L-Tech Scientific Industries](http://forum.kerbalspaceprogram.com/index.php?/topic/49319-0240). I'm not the original author of this mod, Olympic1 just updated it to work for KSP 0.90. Linuxgurugamer updated it to with with 1.1.3.**
+**This is a continuation of [L-Tech Scientific Industries](http://forum.kerbalspaceprogram.com/index.php?/topic/49319-ltech). I'm not the original author of this mod, Olympic1 just updated it to work for KSP 0.90. Linuxgurugamer updated it to with with 1.1.3.**
 
 L-Tech Sciencific Industries is a mod designed to add to the career mode of Kerbal Space Program by providing new ways to generate science, aswell as experimenting with new device types.
 
@@ -18,17 +18,21 @@ L-Tech Sciencific Industries is a mod designed to add to the career mode of Kerb
 * [linuxgurugamer](http://forum.kerbalspaceprogram.com/index.php?/profile/129964-linuxgurugamer/)
 
 #### Required Mods
-* [Module Manager](http://forum.kerbalspaceprogram.com/index.php?/topic/50533-*)
+* [Module Manager](http://forum.kerbalspaceprogram.com/index.php?/topic/50533-mm)
 
 #### Supported Mods
-* [Connected Living Space](http://forum.kerbalspaceprogram.com/index.php?/topic/109972-*)
-* [HullCam VDS](http://forum.kerbalspaceprogram.com/index.php?/topic/145633-*)
-* [Kerbal Inventory System](http://forum.kerbalspaceprogram.com/index.php?/topic/101928-*)
-* [RasterPropMonitor](http://forum.kerbalspaceprogram.com/index.php?/topic/105821-*)
+* [Connected Living Space](http://forum.kerbalspaceprogram.com/index.php?/topic/109972-cls)
+* [HullCam VDS](http://forum.kerbalspaceprogram.com/index.php?/topic/145633-vds)
+* [Kerbal Inventory System](http://forum.kerbalspaceprogram.com/index.php?/topic/101928-kis)
+* [RasterPropMonitor](http://forum.kerbalspaceprogram.com/index.php?/topic/105821-rpm)
 * [Snacks](https://github.com/Angel-125/Snacks/releases)
 
-#### New in v0.4.2
-* Fixed camera
+#### Incompatible Mods
+* [[x] Science!](http://forum.kerbalspaceprogram.com/index.php?/topic/107661-science)
+* [KEI](http://forum.kerbalspaceprogram.com/index.php?/topic/143433-kei)
+
+#### New in v0.4.3
+* Fixed windows not always closing on scene changes
 
 #### Downloads
 * [![][GH:logo]][GH:url]
@@ -46,20 +50,20 @@ This work is licensed under the MIT License.
 [thread:ckan]: http://forum.kerbalspaceprogram.com/index.php?/topic/143140-ckan
 [link:license]: https://github.com/Olympic1/L-Tech/blob/master/LICENSE.txt
 
-[shield:ksp]: https://img.shields.io/badge/KSP-v1.2.0-green.svg
+[shield:ksp]: https://img.shields.io/badge/KSP-v1.2.2-green.svg
 [shield:ckan]: https://img.shields.io/badge/CKAN-Indexed-brightgreen.svg
 [shield:mit]: https://img.shields.io/badge/License-MIT-blue.svg
 
 [logo:ltech]: https://github.com/Olympic1/L-Tech/blob/master/GameData/LTech/Flags/LTechScience.png
-[thread:ltech]: http://forum.kerbalspaceprogram.com/index.php?/topic/49319-0240
+[thread:ltech]: http://forum.kerbalspaceprogram.com/index.php?/topic/49319-ltech
 
 [GH:url]: https://github.com/Olympic1/L-Tech/releases
 [GH:logo]: http://i59.tinypic.com/2i11u2d.jpg
-[DB:url]: https://www.dropbox.com/s/b819xf178vi3fy3/L-Tech_Scientific_Industries_Continued-v0.4.2.0.zip?dl=0
+[DB:url]: https://www.dropbox.com/s/fub7gk0z6i3uw8q/L-Tech_Scientific_Industries_Continued-v0.4.3.0.zip?dl=0
 [DB:logo]: http://i60.tinypic.com/70jj43.jpg
-[OD:url]: https://1drv.ms/u/s!AlH25jPUX2gF2l6i0u65dUsdQtCs
+[OD:url]: https://1drv.ms/u/s!AlH25jPUX2gF2mY-Qq4cCu8-g-Ih
 [OD:logo]: http://i67.tinypic.com/169lvds.png
-[BX:url]: https://app.box.com/s/lew4fv18r17ttwl4rv3nfh6ie2qo1r74
+[BX:url]: https://app.box.com/s/7k0wnubhektrwdg8yh2rcojviboqeca5
 [BX:logo]: http://i68.tinypic.com/2zxur92.png
 
 [SD:url]: https://spacedock.info/mod/227

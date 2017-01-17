@@ -28,17 +28,6 @@ namespace LtScience
     {
         #region Properties
 
-        // GUI styles
-        internal static GUIStyle WindowStyle;
-        internal static GUIStyle ButtonStyle;
-        internal static GUIStyle ButtonToggledStyle;
-        internal static GUIStyle ToggleStyleHeader;
-        internal static GUIStyle LabelStyle;
-        internal static GUIStyle LabelTabHeader;
-        internal static GUIStyle LabelStyleHardRule;
-        internal static GUIStyle ScrollStyle;
-        internal static GUIStyle ToolTipStyle;
-
         // Toolbar integration
         private static IButton _blizzyButton;
         private static ApplicationLauncherButton _stockButton;
@@ -87,22 +76,7 @@ namespace LtScience
                 LtSettings.LoadSettings();
 
                 // Added support for Blizzy toolbar and hot switching between Stock and Blizzy
-                if (LtSettings.enableBlizzyToolbar)
-                {
-                    // Let't try to use Blizzy's toolbar
-                    if (ActivateBlizzyToolBar())
-                        return;
-
-                    // We failed to activate the toolbar, so revert to Stock
-                    GameEvents.onGUIApplicationLauncherReady.Add(OnGuiAppLauncherReady);
-                    GameEvents.onGUIApplicationLauncherDestroyed.Add(OnGuiAppLauncherDestroyed);
-                }
-                else
-                {
-                    // Use Stock toolbar
-                    GameEvents.onGUIApplicationLauncherReady.Add(OnGuiAppLauncherReady);
-                    GameEvents.onGUIApplicationLauncherDestroyed.Add(OnGuiAppLauncherDestroyed);
-                }
+                CreateAppIcons();
             }
             catch (Exception ex)
             {
@@ -114,9 +88,6 @@ namespace LtScience
         {
             try
             {
-                if (HighLogic.LoadedScene == GameScenes.SPACECENTER)
-                    LtSettings.SaveSettings();
-
                 // Instantiate Event Handlers
                 GameEvents.onGameSceneSwitchRequested.Add(OnGameSceneSwitchRequested);
 
@@ -148,28 +119,53 @@ namespace LtScience
                 GameEvents.onHideUI.Remove(OnHideUi);
 
                 // Handle toolbars
-                if (_blizzyButton == null)
-                {
-                    if (_stockButton != null)
-                    {
-                        ApplicationLauncher.Instance.RemoveModApplication(_stockButton);
-                        _stockButton = null;
-                    }
-
-                    if (_stockButton == null)
-                    {
-                        // Remove the Stock toolbar button
-                        GameEvents.onGUIApplicationLauncherReady.Remove(OnGuiAppLauncherReady);
-                    }
-                }
-                else
-                {
-                    _blizzyButton?.Destroy();
-                }
+                DestroyAppIcons();
             }
             catch (Exception ex)
             {
                 Util.LogMessage("LTAddon.OnDestroy. Error: " + ex, Util.LogType.Error);
+            }
+        }
+
+        private void CreateAppIcons()
+        {
+            if (LtSettings.enableBlizzyToolbar)
+            {
+                // Let't try to use Blizzy's toolbar
+                if (ActivateBlizzyToolBar())
+                    return;
+
+                // We failed to activate the toolbar, so revert to Stock
+                GameEvents.onGUIApplicationLauncherReady.Add(OnGuiAppLauncherReady);
+                GameEvents.onGUIApplicationLauncherDestroyed.Add(OnGuiAppLauncherDestroyed);
+            }
+            else
+            {
+                // Use Stock toolbar
+                GameEvents.onGUIApplicationLauncherReady.Add(OnGuiAppLauncherReady);
+                GameEvents.onGUIApplicationLauncherDestroyed.Add(OnGuiAppLauncherDestroyed);
+            }
+        }
+
+        private void DestroyAppIcons()
+        {
+            if (_blizzyButton == null)
+            {
+                if (_stockButton != null)
+                {
+                    ApplicationLauncher.Instance.RemoveModApplication(_stockButton);
+                    _stockButton = null;
+                }
+
+                if (_stockButton == null)
+                {
+                    // Remove the Stock toolbar button
+                    GameEvents.onGUIApplicationLauncherReady.Remove(OnGuiAppLauncherReady);
+                }
+            }
+            else
+            {
+                _blizzyButton?.Destroy();
             }
         }
 
@@ -179,7 +175,7 @@ namespace LtScience
             {
                 GUI.skin = HighLogic.Skin;
 
-                SetupGuiStyles();
+                LtStyle.SetupGuiStyles();
                 Display();
                 LtToolTips.ShowToolTips();
             }
@@ -211,6 +207,10 @@ namespace LtScience
         private void OnGameSceneSwitchRequested(GameEvents.FromToAction<GameScenes, GameScenes> sceneData)
         {
             WindowSettings.showWindow = WindowSkyLab.showWindow = false;
+
+            // Since the changes to Startup options, ON destroy is not being called when a scene change occurs. Startup is being called when the proper scene is loaded.
+            // Let's do some cleanup of the app icons here as well, to be sure we have only the icons we want.
+            DestroyAppIcons();
         }
 
         // Camera UI toggle handlers
@@ -369,104 +369,6 @@ namespace LtScience
 
             if (position.yMax > Screen.height)
                 position.y = Screen.height - position.height;
-        }
-
-        private static void SetupGuiStyles()
-        {
-            if (WindowStyle != null)
-                return;
-
-            WindowStyle = new GUIStyle(GUI.skin.window);
-
-            ButtonStyle = new GUIStyle(GUI.skin.button)
-            {
-                normal = { textColor = Color.white },
-                hover = { textColor = Color.blue },
-                fontSize = 12,
-                padding =
-                {
-                    top = 0,
-                    bottom = 0
-                },
-                fontStyle = FontStyle.Normal,
-                alignment = TextAnchor.MiddleCenter,
-                clipping = TextClipping.Clip
-            };
-
-            ButtonToggledStyle = new GUIStyle(GUI.skin.button)
-            {
-                normal = { textColor = Color.green },
-                hover = { textColor = Color.blue },
-                fontSize = 12,
-                padding =
-                {
-                    top = 0,
-                    bottom = 0
-                },
-                fontStyle = FontStyle.Normal,
-                alignment = TextAnchor.MiddleCenter,
-                clipping = TextClipping.Clip
-            };
-            ButtonToggledStyle.normal.background = ButtonToggledStyle.onActive.background;
-
-            ToggleStyleHeader = new GUIStyle(GUI.skin.toggle)
-            {
-                padding =
-                {
-                    top = 10,
-                    bottom = 6
-                },
-                wordWrap = false,
-                fontStyle = FontStyle.Bold,
-                margin = new RectOffset(0, 0, 0, 0),
-                alignment = TextAnchor.LowerLeft
-            };
-
-            LabelStyle = new GUIStyle(GUI.skin.label);
-
-            LabelTabHeader = new GUIStyle(GUI.skin.label)
-            {
-                padding =
-                {
-                    top = 10,
-                    bottom = 6
-                },
-                wordWrap = false,
-                fontStyle = FontStyle.Bold,
-                margin = new RectOffset(0, 0, 0, 0)
-            };
-
-            LabelStyleHardRule = new GUIStyle(GUI.skin.label)
-            {
-                padding =
-                {
-                    top = 0,
-                    bottom = 6
-                },
-                wordWrap = false,
-                fontStyle = FontStyle.Bold,
-                margin = new RectOffset(0, 0, 0, 0),
-                alignment = TextAnchor.LowerLeft
-            };
-
-            ScrollStyle = new GUIStyle(GUI.skin.box);
-
-            if (GUI.skin != null)
-                GUI.skin = null;
-
-            ToolTipStyle = new GUIStyle(GUI.tooltip)
-            {
-                border = new RectOffset(4, 4, 4, 4),
-                padding = new RectOffset(5, 5, 5, 5),
-                alignment = TextAnchor.MiddleLeft,
-                fontStyle = FontStyle.Italic,
-                wordWrap = false,
-                normal = { textColor = Color.green },
-                hover = { textColor = Color.green }
-            };
-            ToolTipStyle.hover.background = ToolTipStyle.normal.background;
-
-            GUI.skin = HighLogic.Skin;
         }
 
         #endregion

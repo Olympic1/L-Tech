@@ -31,8 +31,11 @@ L-Tech Sciencific Industries is a mod designed to add to the career mode of Kerb
 * [[x] Science!](http://forum.kerbalspaceprogram.com/index.php?/topic/107661-science)
 * [KEI](http://forum.kerbalspaceprogram.com/index.php?/topic/143433-kei)
 
-#### New in v0.4.3
-* Fixed windows not always closing on scene changes
+#### New in v0.4.4
+* Performance updates
+* Removed unnecessary saving
+* Settings icon wasn't correctly updated in flight scene
+* Updated ToolbarWrapper (again)
 
 #### Downloads
 * [![][GH:logo]][GH:url]

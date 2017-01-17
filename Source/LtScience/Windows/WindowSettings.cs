@@ -52,7 +52,7 @@ namespace LtScience.Windows
                 if (GUI.Button(rect, new GUIContent("X", "Close Window.\r\nSettings will not be saved.")))
                 {
                     toolTip = "";
-                    if (HighLogic.LoadedScene == GameScenes.SPACECENTER)
+                    if (HighLogic.LoadedScene == GameScenes.SPACECENTER || HighLogic.LoadedSceneIsFlight)
                         LtAddon.OnToolbarButtonToggle();
                     else
                         showWindow = false;
@@ -114,8 +114,8 @@ namespace LtScience.Windows
 
                 const int scrollX = 20;
 
-                GUILayout.Label("L-Tech v" + LtSettings.curVersion, LtAddon.LabelTabHeader);
-                GUILayout.Label("\r\n___________________________________", LtAddon.LabelStyleHardRule, GUILayout.Width(280), GUILayout.Height(10));
+                GUILayout.Label("L-Tech v" + LtSettings.curVersion, LtStyle.LabelTabHeader, GUILayout.Width(280));
+                GUILayout.Label("\r\n___________________________________", LtStyle.LabelStyleHardRule, GUILayout.Width(280), GUILayout.Height(10));
 
                 // Blizzy Toolbar
                 if (!ToolbarManager.ToolbarAvailable)
@@ -128,7 +128,7 @@ namespace LtScience.Windows
                     GUI.enabled = true;
 
                 _label = "Enable Blizzy Toolbar";
-                _toolTip = "Switches the toolbar Icons over to Blizzy's toolbar, if installed.";
+                _toolTip = "Switches the toolbar icon over to Blizzy's toolbar, if installed.";
                 _toolTip += "\r\nIf Blizzy's toolbar is not installed, option is not selectable.";
                 _guiLabel = new GUIContent(_label, _toolTip);
                 LtSettings.enableBlizzyToolbar = GUILayout.Toggle(LtSettings.enableBlizzyToolbar, _guiLabel, GUILayout.Width(280));
@@ -138,7 +138,7 @@ namespace LtScience.Windows
 
                 GUI.enabled = true;
                 // Tooltips
-                _label = "Enable Tool Tips";
+                _label = "Enable Tooltips";
                 _toolTip = "Turns tooltips On or Off.";
                 _toolTip += "\r\nThis is a global setting for all windows.";
                 _guiLabel = new GUIContent(_label, _toolTip);
@@ -147,7 +147,6 @@ namespace LtScience.Windows
                 if (Event.current.type == EventType.Repaint && _canShowToolTips)
                     toolTip = LtToolTips.SetActiveToolTip(_rect, GUI.tooltip, ref toolTipActive, scrollX);
 
-                GUI.enabled = true;
                 GUILayout.Label("", GUILayout.Height(10));
                 GUILayout.Label("Screenshot Settings:", GUILayout.Height(20));
 

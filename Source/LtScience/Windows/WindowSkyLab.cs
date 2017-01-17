@@ -46,7 +46,7 @@ namespace LtScience.Windows
                         if (ValidLab())
                         {
                             step = "3 - Show SkyLab";
-                            position = GUILayout.Window(5234628, position, Display, title, LtAddon.WindowStyle, GUILayout.MinHeight(20));
+                            position = GUILayout.Window(5234628, position, Display, title, LtStyle.WindowStyle, GUILayout.MinHeight(20));
                         }
                         else
                         {

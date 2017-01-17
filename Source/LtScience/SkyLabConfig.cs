@@ -1,9 +1,9 @@
 ﻿/*
  * L-Tech Scientific Industries Continued
- * Copyright © 2015-2016, Arne Peirs (Olympic1)
- * Copyright © 2016, linuxgurugamer
+ * Copyright © 2015-2017, Arne Peirs (Olympic1)
+ * Copyright © 2016-2017, linuxgurugamer
  * 
- * Kerbal Space Program is Copyright © 2011-2016 Squad. See http://kerbalspaceprogram.com/.
+ * Kerbal Space Program is Copyright © 2011-2017 Squad. See http://kerbalspaceprogram.com/.
  * This project is in no way associated with nor endorsed by Squad.
  * 
  * This file is part of Olympic1's L-Tech (Continued). Original author of L-Tech is 'ludsoe' on the KSP Forums.

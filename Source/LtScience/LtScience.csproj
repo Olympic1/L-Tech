@@ -65,31 +65,9 @@
     <Compile Include="SkyLabConfig.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
-  <Target Name="PostBuildMacros">
-    <GetAssemblyIdentity AssemblyFiles="$(TargetPath)">
-      <Output TaskParameter="Assemblies" ItemName="Targets" />
-    </GetAssemblyIdentity>
-    <ItemGroup>
-      <VersionNumber Include="@(Targets->'%(Version)')" />
-    </ItemGroup>
-  </Target>
   <PropertyGroup>
-    <PostBuildEventDependsOn>
-      $(PostBuildEventDependsOn);
-      PostBuildMacros;
-    </PostBuildEventDependsOn>
-  </PropertyGroup>
-  <PropertyGroup>
-    <PostBuildEvent>@echo Writing version number to file
-@echo @(VersionNumber)&gt;C:\Games\KSP\DirPaths\version.txt
-@echo:
-call C:\Games\KSP\KSP_win\Copy_LTech.bat</PostBuildEvent>
+    <PostBuildEvent>@echo:
+@echo Distributing LtScience files...
+copy /y "$(TargetDir)LtScience.dll" "..\..\..\..\GameData\LTech\Plugins"</PostBuildEvent>
   </PropertyGroup>
 </Project>

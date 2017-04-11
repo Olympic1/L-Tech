@@ -1,9 +1,10 @@
-v4.4 - 00 Jan 2017
+v4.4 - 11 Apr 2017
 ------------------
 * Performance updates
 * Removed unnecessary saving
 * Settings icon wasn't correctly updated in flight scene
 * Updated ToolbarWrapper (again)
+* Switched tech level of cameras with each other
 
 v4.3 - 15 Dec 2016
 ------------------

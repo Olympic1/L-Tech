@@ -23,7 +23,7 @@
     ],
     "depends" :
     [
-        { "name" : "ModuleManager", "min_version" : "2.7.0" }
+        { "name" : "ModuleManager", "min_version" : "2.7.5" }
     ],
     "suggests" :
     [

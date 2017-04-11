@@ -41,10 +41,10 @@ namespace LtScience.InternalObjects
         {
             if (LtSettings.showToolTips && (toolTip != null) && (toolTip.Trim().Length > 0))
             {
-                Vector2 size = LtAddon.ToolTipStyle.CalcSize(new GUIContent(toolTip));
+                Vector2 size = LtStyle.ToolTipStyle.CalcSize(new GUIContent(toolTip));
                 _position = new Rect(toolTipPos.x, toolTipPos.y, size.x, size.y);
                 RepositionToolTip();
-                GUI.Window(0, _position, EmptyWindow, toolTip, LtAddon.ToolTipStyle);
+                GUI.Window(0, _position, EmptyWindow, toolTip, LtStyle.ToolTipStyle);
                 GUI.BringWindowToFront(0);
             }
         }

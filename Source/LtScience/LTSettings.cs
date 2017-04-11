@@ -97,7 +97,7 @@ namespace LtScience
             }
 
             // Force styles to refresh/load
-            LtAddon.WindowStyle = null;
+            LtStyle.WindowStyle = null;
 
             // Lets make sure that the windows can be seen on the screen
             LtAddon.RepositionWindows();

@@ -830,11 +830,7 @@ namespace LtScience.APIClients
                     type = t;
             });
 
-            if (type != null)
-            {
-                return type;
-            }
-            return null;
+            return type;
         }
 
         internal static PropertyInfo getProperty(Type type, string name)

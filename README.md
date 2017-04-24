@@ -32,12 +32,8 @@ L-Tech Sciencific Industries is a mod designed to add to the career mode of Kerb
 * [[x] Science!](http://forum.kerbalspaceprogram.com/index.php?/topic/107661-science)
 * [KEI](http://forum.kerbalspaceprogram.com/index.php?/topic/143433-kei)
 
-### New in v0.4.4
-* Performance updates
-* Removed unnecessary saving
-* Settings icon wasn't correctly updated in flight scene
-* Updated ToolbarWrapper (again)
-* Switched tech level of cameras with each other
+### New in v0.4.5
+* Hotfix for crash
 
 ### Downloads
 * [![][image:dropbox]][release:dropbox]
@@ -63,9 +59,9 @@ This work is licensed under the MIT License.
 [logo:ltech]: https://github.com/Olympic1/L-Tech/blob/master/GameData/LTech/Flags/LTechScience.png
 [thread:ltech]: http://forum.kerbalspaceprogram.com/index.php?/topic/49319-ltech
 
-[release:dropbox]: https://www.dropbox.com/s/pi18d81k59eean5/L-Tech_Scientific_Industries_Continued-v0.4.4.0.zip?dl=0
-[release:onedrive]: https://1drv.ms/u/s!AlH25jPUX2gF5DDRDbVwl9lHwjgd
-[release:box]: https://app.box.com/s/zu04fx49iabbf1ibttng19ig98mf8cys
+[release:dropbox]: https://www.dropbox.com/s/1owizwubo9y2ekz/L-Tech_Scientific_Industries_Continued-v0.4.5.0.zip?dl=0
+[release:onedrive]: https://1drv.ms/u/s!AlH25jPUX2gF51xqUcQZXzww5vsB
+[release:box]: https://app.box.com/s/19yunrawppfrizabpl7x94q2aiiw5zt3
 [release:github]: https://github.com/Olympic1/L-Tech/releases/latest
 [release:spacedock]: https://spacedock.info/mod/227
 [release:ckan]: http://forum.kerbalspaceprogram.com/index.php?/topic/154922-ckan/

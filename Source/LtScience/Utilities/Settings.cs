@@ -1,30 +1,27 @@
 ﻿/*
  * L-Tech Scientific Industries Continued
- * Copyright © 2015-2017, Arne Peirs (Olympic1)
- * Copyright © 2016-2017, linuxgurugamer
+ * Copyright © 2015-2018, Arne Peirs (Olympic1)
+ * Copyright © 2016-2018, Jonathan Bayer (linuxgurugamer)
  * 
- * Kerbal Space Program is Copyright © 2011-2017 Squad. See http://kerbalspaceprogram.com/.
+ * Kerbal Space Program is Copyright © 2011-2018 Squad. See https://kerbalspaceprogram.com/.
  * This project is in no way associated with nor endorsed by Squad.
  * 
  * This file is part of Olympic1's L-Tech (Continued). Original author of L-Tech is 'ludsoe' on the KSP Forums.
  * This file was not part of the original L-Tech but was written by Arne Peirs.
- * Copyright © 2015-2017, Arne Peirs (Olympic1)
+ * Copyright © 2015-2018, Arne Peirs (Olympic1)
  * 
  * Continues to be licensed under the MIT License.
  * See <https://opensource.org/licenses/MIT> for full details.
  */
 
-using LtScience.InternalObjects;
-using LtScience.Modules;
-using LtScience.Windows;
-using System;
 using System.IO;
 using System.Reflection;
+using LtScience.Windows;
 using UnityEngine;
 
-namespace LtScience
+namespace LtScience.Utilities
 {
-    public class LtSettings : MonoBehaviour
+    internal static class Settings
     {
         #region Properties
 
@@ -40,23 +37,17 @@ namespace LtScience
 
         // Settings
         internal static float resolution = 1f;
-        internal const float minResolution = 1f;
-        internal const float maxResolution = 5f;
+        internal const float minResolution = 0.5f;
+        internal const float maxResolution = 3f;
 
         internal static float shuttertime = 0.2f;
         internal const float minShuttertime = 0.2f;
-        internal const float maxShuttertime = 5f;
+        internal const float maxShuttertime = 3f;
 
         internal static bool enableBlizzyToolbar;
         internal static bool prevEnableBlizzyToolbar;
 
         internal static bool hideUiOnScreenshot;
-
-        internal static bool convertToJpg;
-        internal static bool keepOriginalPng;
-        internal static int jpgQuality = 75;
-
-        internal static bool showToolTips = true;
 
         #endregion
 
@@ -77,9 +68,9 @@ namespace LtScience
                 ConfigNode windowsNode = settings.HasNode("LT_Windows") ? settings.GetNode("LT_Windows") : settings.AddNode("LT_Windows");
                 ConfigNode settingsNode = settings.HasNode("LT_Settings") ? settings.GetNode("LT_Settings") : settings.AddNode("LT_Settings");
 
-                // Load window posisitons
+                // Load window positions
                 WindowSettings.position = GetRectangle(windowsNode, "SettingsPosition", WindowSettings.position);
-                WindowSkyLab.position = GetRectangle(windowsNode, "SkylabPosition", WindowSkyLab.position);
+                WindowSkylab.position = GetRectangle(windowsNode, "SkylabPosition", WindowSkylab.position);
 
                 // Load settings
                 resolution = settingsNode.HasValue("Resolution") ? float.Parse(settingsNode.GetValue("Resolution")) : resolution;
@@ -88,19 +79,15 @@ namespace LtScience
                 enableBlizzyToolbar = settingsNode.HasValue("EnableBlizzyToolbar") ? bool.Parse(settingsNode.GetValue("EnableBlizzyToolbar")) : enableBlizzyToolbar;
                 hideUiOnScreenshot = settingsNode.HasValue("HideUIOnScreenshot") ? bool.Parse(settingsNode.GetValue("HideUIOnScreenshot")) : hideUiOnScreenshot;
 
-                convertToJpg = settingsNode.HasValue("ConvertToJPG") ? bool.Parse(settingsNode.GetValue("ConvertToJPG")) : convertToJpg;
-                keepOriginalPng = settingsNode.HasValue("KeepOriginalPNG") ? bool.Parse(settingsNode.GetValue("KeepOriginalPNG")) : keepOriginalPng;
-                jpgQuality = settingsNode.HasValue("JPGQuality") ? int.Parse(settingsNode.GetValue("JPGQuality")) : jpgQuality;
-
                 // Set the loaded flag
                 loaded = true;
             }
 
             // Force styles to refresh/load
-            LtStyle.WindowStyle = null;
+            Style.WindowStyle = null;
 
             // Lets make sure that the windows can be seen on the screen
-            LtAddon.RepositionWindows();
+            Addon.RepositionWindows();
         }
 
         internal static void SaveSettings()
@@ -113,9 +100,9 @@ namespace LtScience
                 ConfigNode windowsNode = settings.HasNode("LT_Windows") ? settings.GetNode("LT_Windows") : settings.AddNode("LT_Windows");
                 ConfigNode settingsNode = settings.HasNode("LT_Settings") ? settings.GetNode("LT_Settings") : settings.AddNode("LT_Settings");
 
-                // Save window posisitons
+                // Save window positions
                 WriteRectangle(windowsNode, "SettingsPosition", WindowSettings.position);
-                WriteRectangle(windowsNode, "SkylabPosition", WindowSkyLab.position);
+                WriteRectangle(windowsNode, "SkylabPosition", WindowSkylab.position);
 
                 // Save settings
                 WriteValue(settingsNode, "Resolution", $"{resolution:0}");
@@ -123,10 +110,6 @@ namespace LtScience
 
                 WriteValue(settingsNode, "EnableBlizzyToolbar", enableBlizzyToolbar);
                 WriteValue(settingsNode, "HideUIOnScreenshot", hideUiOnScreenshot);
-
-                WriteValue(settingsNode, "ConvertToJPG", convertToJpg);
-                WriteValue(settingsNode, "KeepOriginalPNG", keepOriginalPng);
-                WriteValue(settingsNode, "JPGQuality", jpgQuality);
 
                 if (!Directory.Exists(settingsPath))
                     Directory.CreateDirectory(settingsPath);
@@ -139,14 +122,7 @@ namespace LtScience
         {
             resolution = 1f;
             shuttertime = 0.2f;
-
             hideUiOnScreenshot = false;
-
-            convertToJpg = false;
-            keepOriginalPng = false;
-            jpgQuality = 75;
-
-            showToolTips = true;
 
             SaveSettings();
         }
@@ -185,31 +161,6 @@ namespace LtScience
                 node.RemoveValue(name);
 
             node.AddValue(name, value.ToString());
-        }
-
-        #endregion
-
-        #region Event Handler
-
-        internal void Start()
-        {
-            try
-            {
-                if (HighLogic.LoadedSceneIsFlight)
-                {
-                    foreach (Vessel ves in FlightGlobals.Vessels)
-                    {
-                        ves.FindPartModulesImplementing<HullCamera>().ForEach(part =>
-                        {
-                            part.config = this;
-                        });
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Util.LogMessage("LTSettings.Start. Error: " + ex, Util.LogType.Error);
-            }
         }
 
         #endregion

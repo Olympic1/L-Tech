@@ -1,160 +1,132 @@
 ﻿/*
  * L-Tech Scientific Industries Continued
- * Copyright © 2015-2017, Arne Peirs (Olympic1)
- * Copyright © 2016-2017, linuxgurugamer
+ * Copyright © 2015-2018, Arne Peirs (Olympic1)
+ * Copyright © 2016-2018, Jonathan Bayer (linuxgurugamer)
  * 
- * Kerbal Space Program is Copyright © 2011-2017 Squad. See http://kerbalspaceprogram.com/.
+ * Kerbal Space Program is Copyright © 2011-2018 Squad. See https://kerbalspaceprogram.com/.
  * This project is in no way associated with nor endorsed by Squad.
  * 
  * This file is part of Olympic1's L-Tech (Continued). Original author of L-Tech is 'ludsoe' on the KSP Forums.
- * This file was part of the original L-Tech and was written by ludsoe.
- * Copyright © 2015, ludsoe
+ * This file was not part of the original L-Tech but was written by Arne Peirs.
+ * Copyright © 2015-2018, Arne Peirs (Olympic1)
  * 
  * Continues to be licensed under the MIT License.
  * See <https://opensource.org/licenses/MIT> for full details.
  */
 
-using LtScience.APIClients;
-using LtScience.InternalObjects;
+using KSP.Localization;
+using LtScience.Utilities;
 
 namespace LtScience.Modules
 {
-    public class SkyLabCore : LtScienceBase
+    internal class SkylabCore : PartModule
     {
-        [KSPField(isPersistant = false)]
-        public float rate = 5;
+        #region Properties
 
-        [KSPField(isPersistant = false)]
+        [KSPField]
+        public float rate = 5f;
+
+        [KSPField]
         public int minimumCrew = 0;
 
         [KSPField(isPersistant = true)]
         public bool doResearch;
 
         [KSPField(isPersistant = true)]
-        public float lastActive;
+        public double lastActive;
 
-        [KSPField(isPersistant = false, guiActive = true, guiName = "Run Lab")]
-        public string status = "";
+        [KSPField(isPersistant = false, guiActive = true, guiName = "#autoLOC_LTech_LabCore_001")]
+        public string status = string.Empty;
 
-        private bool IsActive()
+        protected virtual bool IsActive()
         {
-            return doResearch && part.protoModuleCrew.Count >= minimumCrew && !CheckBoring(vessel);
+            return doResearch && part.protoModuleCrew.Count >= minimumCrew && !Utils.CheckBoring(vessel);
         }
 
-        private float _lastProduction;
+        private double _lastProduction;
         private int _crewCount;
 
-        private void UpdateStatus()
+        #endregion
+
+        #region Methods
+
+        private void UpdateUI()
         {
+            Events["StartResearch"].active = !doResearch;
+            Events["StopResearch"].active = doResearch;
+
             if (IsActive())
             {
-                if (_lastProduction != 0)
-                    status = "Generating Insight.";
-                else
-                    status = "Unable to generate Insight.";
+                status = _lastProduction != 0.0 ? Localizer.Format("#autoLOC_LTech_LabCore_002") : Localizer.Format("#autoLOC_LTech_LabCore_003");
             }
             else
             {
                 if (!doResearch)
-                    status = "Paused";
-                else if (part.protoModuleCrew.Count < minimumCrew)
-                    status = "Insufficient crew (add " + (minimumCrew - part.protoModuleCrew.Count) + " more crew)";
-                else if (CheckBoring(vessel))
-                    status = "Location too boring";
+                    status = Localizer.Format("#autoLOC_LTech_LabCore_004");
+                else if (minimumCrew > 0 && part.protoModuleCrew.Count < minimumCrew)
+                    status = Localizer.Format("#autoLOC_LTech_LabCore_005", part.protoModuleCrew.Count, minimumCrew);
+                else if (Utils.CheckBoring(vessel))
+                    status = Localizer.Format("#autoLOC_LTech_LabCore_006");
                 else
-                    status = "ERROR!";
+                    DummyStatus();
             }
         }
 
-        private void GenerateInsight(float amount)
+        protected virtual void DummyStatus()
         {
-            if (InstalledMods.IsTacInstalled)
-            {
-                //Util.LogMessage("TAC Life Support is installed. Use Food as resource.", Util.LogType.Info);
-                // Generate Insight using Food
-            }
-            else if (InstalledMods.IsUsiInstalled)
-            {
-                //Util.LogMessage("USI Life Support is installed. Use Food or Supplies as resource.", Util.LogType.Info);
-                // Generate Insight using Food or Supplies
-            }
-            else if (InstalledMods.IsSnacksInstalled)
-            {
-                //Util.LogMessage("Snacks is installed. Use Snacks as resource.", Util.LogType.Info);
-                // Generate Insight using Snacks
-            }
-            else
-            {
-                //Util.LogMessage("No Life Support is installed. Use magical unicorns as resource.", Util.LogType.Info);
-                // Just generate Insight
-            }
+        }
 
-            float resource = part.RequestResource("Snacks", amount);
+        private void GenerateInsight(double amount)
+        {
+            double resource = part.RequestResource("Snacks", amount);
             _lastProduction = part.RequestResource("Insight", -resource);
 
-            if (_lastProduction == 0)
+            if (_lastProduction == 0.0)
                 part.RequestResource("Snacks", -resource);
         }
 
-        public override void OnStart(StartState state)
-        {
-            base.OnStart(state);
+        #endregion
 
-            if (state == StartState.Editor)
-                return;
+        #region KSP Events
 
-            part.force_activate();
-
-            if (lastActive > 0 && IsActive())
-            {
-                double timeDiff = Planetarium.GetUniversalTime() - lastActive;
-                float resourcerate = rate * (float)timeDiff / 3600 * _crewCount;
-                GenerateInsight(resourcerate);
-            }
-
-            Events["StopResearch"].active = doResearch;
-            Events["StartResearch"].active = !doResearch;
-            UpdateStatus();
-        }
-
-        [KSPEvent(guiActive = true, guiName = "Start research (LT)", active = true)]
-        private void StartResearch()
+        [KSPEvent(guiActive = true, guiName = "#autoLOC_LTech_LabCore_007", active = true)]
+        public void StartResearch()
         {
             if (part.protoModuleCrew.Count < minimumCrew)
             {
-                Util.DisplayScreenMsg("Not enough crew in this module.");
+                Utils.DisplayScreenMsg(Localizer.Format("#autoLOC_LTech_LabCore_008"));
                 return;
             }
 
             doResearch = true;
             _crewCount = part.protoModuleCrew.Count + 1;
-            Events["StopResearch"].active = doResearch;
-            Events["StartResearch"].active = !doResearch;
-            UpdateStatus();
+            UpdateUI();
         }
 
-        [KSPEvent(guiActive = true, guiName = "Stop research (LT)", active = true)]
-        private void StopResearch()
+        [KSPEvent(guiActive = true, guiName = "#autoLOC_LTech_LabCore_009", active = true)]
+        public void StopResearch()
         {
             doResearch = false;
-            Events["StopResearch"].active = doResearch;
-            Events["StartResearch"].active = !doResearch;
-            UpdateStatus();
+            UpdateUI();
         }
 
-        [KSPAction("Activate Lab (LT)")]
-        public void StartResearchingAction(KSPActionParam param)
+        #endregion
+
+        #region KSP Actions
+
+        [KSPAction("#autoLOC_LTech_LabCore_007")]
+        public void StartResearchAction(KSPActionParam param)
         {
             StartResearch();
         }
 
-        [KSPAction("Deactivate Lab (LT)")]
-        public void StopGeneratingAction(KSPActionParam param)
+        [KSPAction("#autoLOC_LTech_LabCore_009")]
+        public void StopResearchAction(KSPActionParam param)
         {
             StopResearch();
         }
 
-        [KSPAction("Toggle Lab (LT)")]
+        [KSPAction("#autoLOC_LTech_LabCore_010")]
         public void ToggleResearchAction(KSPActionParam param)
         {
             if (doResearch)
@@ -163,24 +135,51 @@ namespace LtScience.Modules
                 StartResearch();
         }
 
+        #endregion
+
+        #region Event Handlers
+
+        public override void OnStart(StartState state)
+        {
+            base.OnStart(state);
+            if (state == StartState.Editor)
+                return;
+
+            part.force_activate();
+            if (lastActive > 0 && IsActive())
+            {
+                double timeDiff = Planetarium.GetUniversalTime() - lastActive;
+                double resourceRate = rate * timeDiff / 500 * _crewCount;
+                GenerateInsight(resourceRate);
+            }
+
+            UpdateUI();
+        }
+
         public override void OnFixedUpdate()
         {
             if (IsActive())
             {
-                float resourcerate = rate * TimeWarp.fixedDeltaTime / 3600 * _crewCount;
-                GenerateInsight(resourcerate);
-                lastActive = (float)Planetarium.GetUniversalTime();
+                double resourceRate = rate * TimeWarp.fixedDeltaTime / 500 * _crewCount;
+                GenerateInsight(resourceRate);
+                lastActive = Planetarium.GetUniversalTime();
+            }
+            else
+            {
+                lastActive = 0.0;
             }
         }
 
         public override void OnUpdate()
         {
-            UpdateStatus();
+            UpdateUI();
         }
 
         public override string GetInfo()
         {
-            return "Researchers required: " + minimumCrew + "\n" + "Insight per hour: " + rate + " * Crew";
+            return Localizer.Format("#autoLOC_LTech_LabCore_011", minimumCrew);
         }
+
+        #endregion
     }
 }

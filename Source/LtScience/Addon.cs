@@ -1,30 +1,29 @@
 ﻿/*
  * L-Tech Scientific Industries Continued
- * Copyright © 2015-2017, Arne Peirs (Olympic1)
- * Copyright © 2016-2017, linuxgurugamer
+ * Copyright © 2015-2018, Arne Peirs (Olympic1)
+ * Copyright © 2016-2018, Jonathan Bayer (linuxgurugamer)
  * 
- * Kerbal Space Program is Copyright © 2011-2017 Squad. See http://kerbalspaceprogram.com/.
+ * Kerbal Space Program is Copyright © 2011-2018 Squad. See https://kerbalspaceprogram.com/.
  * This project is in no way associated with nor endorsed by Squad.
  * 
  * This file is part of Olympic1's L-Tech (Continued). Original author of L-Tech is 'ludsoe' on the KSP Forums.
  * This file was not part of the original L-Tech but was written by Arne Peirs.
- * Copyright © 2015-2017, Arne Peirs (Olympic1)
+ * Copyright © 2015-2018, Arne Peirs (Olympic1)
  * 
  * Continues to be licensed under the MIT License.
  * See <https://opensource.org/licenses/MIT> for full details.
  */
 
-using KSP.UI.Screens;
-using LtScience.APIClients;
-using LtScience.InternalObjects;
-using LtScience.Windows;
 using System;
+using KSP.UI.Screens;
+using LtScience.Utilities;
+using LtScience.Windows;
 using UnityEngine;
 
 namespace LtScience
 {
     [KSPAddon(KSPAddon.Startup.FlightAndKSC, false)]
-    public class LtAddon : MonoBehaviour
+    internal class Addon : MonoBehaviour
     {
         #region Properties
 
@@ -33,54 +32,53 @@ namespace LtScience
         private static ApplicationLauncherButton _stockButton;
 
         // Toolbar icons
-        private const string BlizzyOff = "LTech/Plugins/LT_blizzy_off";
-        private const string BlizzyOn = "LTech/Plugins/LT_blizzy_on";
-        private const string StockOff = "LTech/Plugins/LT_stock_off";
-        private const string StockOn = "LTech/Plugins/LT_stock_on";
+        private const string _blizzyOff = "LTech/Plugins/LT_blizzy_off";
+        private const string _blizzyOn = "LTech/Plugins/LT_blizzy_on";
+        private const string _stockOff = "LTech/Plugins/LT_stock_off";
+        private const string _stockOn = "LTech/Plugins/LT_stock_on";
+
+        // Repeating error latch
+        internal static bool FrameErrTripped;
 
         // Camera UI toggle
         internal static bool ShowUi = true;
 
         // Makes instance available via reflection
-        private static LtAddon Instance
-        {
-            get;
-            set;
-        }
+        public static Addon Instance;
 
         #endregion
 
         #region Constructor
 
-        public LtAddon()
+        public Addon()
         {
-            if (Instance == null)
-                Instance = this;
+            Instance = this;
         }
 
         #endregion
 
         #region Event Handlers
 
-        private static void DummyVoid()
-        { }
+        private void DummyVoid()
+        {
+            // This is used for the Stock toolbar. Some delegates are not needed.
+        }
 
         internal void Awake()
         {
             try
             {
-                if (HighLogic.LoadedScene != GameScenes.SPACECENTER && HighLogic.LoadedScene != GameScenes.FLIGHT)
+                if (HighLogic.LoadedScene != GameScenes.SPACECENTER && !HighLogic.LoadedSceneIsFlight)
                     return;
 
-                DontDestroyOnLoad(this);
-                LtSettings.LoadSettings();
+                Settings.LoadSettings();
 
-                // Added support for Blizzy toolbar and hot switching between Stock and Blizzy
-                CreateAppIcons();
+                // Handle toolbars
+                CreateAppIcon();
             }
             catch (Exception ex)
             {
-                Util.LogMessage("LTAddon.Awake. Error: " + ex, Util.LogType.Error);
+                Utils.LogMessage($"Addon.Awake. Error: {ex}", Utils.LogType.Error);
             }
         }
 
@@ -88,11 +86,15 @@ namespace LtScience
         {
             try
             {
-                // Instantiate Event Handlers
+                // Reset frame error latch if set
+                if (FrameErrTripped)
+                    FrameErrTripped = false;
+
+                // Instantiate event handlers
                 GameEvents.onGameSceneSwitchRequested.Add(OnGameSceneSwitchRequested);
 
                 // If we are not in flight, the rest does not get done!
-                if (HighLogic.LoadedScene != GameScenes.FLIGHT)
+                if (!HighLogic.LoadedSceneIsFlight)
                     return;
 
                 GameEvents.onGameSceneLoadRequested.Add(OnGameSceneLoadRequested);
@@ -101,7 +103,7 @@ namespace LtScience
             }
             catch (Exception ex)
             {
-                Util.LogMessage("LTAddon.Start. Error: " + ex, Util.LogType.Error);
+                Utils.LogMessage($"Addon.Start. Error: {ex}", Utils.LogType.Error);
             }
         }
 
@@ -109,45 +111,44 @@ namespace LtScience
         {
             try
             {
-                if (LtSettings.loaded)
-                    LtSettings.SaveSettings();
+                if (Settings.loaded)
+                    Settings.SaveSettings();
 
                 GameEvents.onGameSceneSwitchRequested.Remove(OnGameSceneSwitchRequested);
-
                 GameEvents.onGameSceneLoadRequested.Remove(OnGameSceneLoadRequested);
-                GameEvents.onShowUI.Remove(OnShowUi);
                 GameEvents.onHideUI.Remove(OnHideUi);
+                GameEvents.onShowUI.Remove(OnShowUi);
 
                 // Handle toolbars
-                DestroyAppIcons();
+                DestroyAppIcon();
             }
             catch (Exception ex)
             {
-                Util.LogMessage("LTAddon.OnDestroy. Error: " + ex, Util.LogType.Error);
+                Utils.LogMessage($"Addon.OnDestroy. Error: {ex}", Utils.LogType.Error);
             }
         }
 
-        private void CreateAppIcons()
+        private void CreateAppIcon()
         {
-            if (LtSettings.enableBlizzyToolbar)
+            if (Settings.enableBlizzyToolbar)
             {
-                // Let't try to use Blizzy's toolbar
-                if (ActivateBlizzyToolBar())
+                // Let's try to use Blizzy's toolbar
+                if (ActivateBlizzyToolbar())
                     return;
 
-                // We failed to activate the toolbar, so revert to Stock
+                // We failed to activate the toolbar, so revert to stock
                 GameEvents.onGUIApplicationLauncherReady.Add(OnGuiAppLauncherReady);
                 GameEvents.onGUIApplicationLauncherDestroyed.Add(OnGuiAppLauncherDestroyed);
             }
             else
             {
-                // Use Stock toolbar
+                // Use stock toolbar
                 GameEvents.onGUIApplicationLauncherReady.Add(OnGuiAppLauncherReady);
                 GameEvents.onGUIApplicationLauncherDestroyed.Add(OnGuiAppLauncherDestroyed);
             }
         }
 
-        private void DestroyAppIcons()
+        private void DestroyAppIcon()
         {
             if (_blizzyButton == null)
             {
@@ -158,10 +159,8 @@ namespace LtScience
                 }
 
                 if (_stockButton == null)
-                {
-                    // Remove the Stock toolbar button
+                    // Remove the stock toolbar button
                     GameEvents.onGUIApplicationLauncherReady.Remove(OnGuiAppLauncherReady);
-                }
             }
             else
             {
@@ -175,13 +174,12 @@ namespace LtScience
             {
                 GUI.skin = HighLogic.Skin;
 
-                LtStyle.SetupGuiStyles();
+                Style.SetupGuiStyles();
                 Display();
-                LtToolTips.ShowToolTips();
             }
             catch (Exception ex)
             {
-                Util.LogMessage("LTAddon.OnGUI. Error: " + ex, Util.LogType.Error);
+                Utils.LogMessage($"Addon.OnGUI. Error: {ex}", Utils.LogType.Error);
             }
         }
 
@@ -189,28 +187,32 @@ namespace LtScience
         {
             try
             {
-                if (HighLogic.LoadedScene == GameScenes.SPACECENTER && HighLogic.LoadedSceneIsFlight)
+                if (HighLogic.LoadedScene == GameScenes.SPACECENTER || HighLogic.LoadedSceneIsFlight)
                     CheckForToolbarTypeToggle();
             }
             catch (Exception ex)
             {
-                Util.LogMessage($"LTAddon.Update (repeating error). Error: {ex.Message} \r\n\r\n{ex.StackTrace}", Util.LogType.Error);
+                if (!FrameErrTripped)
+                {
+                    Utils.LogMessage($"Addon.Update (repeating error). Error: {ex.Message}\r\n\r\n{ex.StackTrace}", Utils.LogType.Error);
+                    FrameErrTripped = true;
+                }
             }
         }
 
         // Save settings on scene changes
         private void OnGameSceneLoadRequested(GameScenes requestedScene)
         {
-            LtSettings.SaveSettings();
+            Settings.SaveSettings();
         }
 
         private void OnGameSceneSwitchRequested(GameEvents.FromToAction<GameScenes, GameScenes> sceneData)
         {
-            WindowSettings.showWindow = WindowSkyLab.showWindow = false;
+            WindowSettings.showWindow = WindowSkylab.showWindow = false;
 
-            // Since the changes to Startup options, ON destroy is not being called when a scene change occurs. Startup is being called when the proper scene is loaded.
-            // Let's do some cleanup of the app icons here as well, to be sure we have only the icons we want.
-            DestroyAppIcons();
+            // Since the changes to Startup options, OnDestroy is not being called when a scene change occurs. Startup is being called when the proper scene is loaded.
+            // Let's do some cleanup of the app icons here as well to be sure we only have the icons we want.
+            DestroyAppIcon();
         }
 
         // Camera UI toggle handlers
@@ -227,15 +229,15 @@ namespace LtScience
         // Stock vs Blizzy toolbar switch handler
         private void CheckForToolbarTypeToggle()
         {
-            if (LtSettings.enableBlizzyToolbar && !LtSettings.prevEnableBlizzyToolbar)
+            if (Settings.enableBlizzyToolbar && !Settings.prevEnableBlizzyToolbar)
             {
-                // Let't try to use Blizzy's toolbar
-                if (!ActivateBlizzyToolBar())
+                // Let's try to use Blizzy's toolbar
+                if (!ActivateBlizzyToolbar())
                 {
-                    // We failed to activate the toolbar, so revert to Stock
+                    // We failed to activate the toolbar, so revert to stock
                     GameEvents.onGUIApplicationLauncherReady.Add(OnGuiAppLauncherReady);
                     GameEvents.onGUIApplicationLauncherDestroyed.Add(OnGuiAppLauncherDestroyed);
-                    LtSettings.enableBlizzyToolbar = LtSettings.prevEnableBlizzyToolbar;
+                    Settings.enableBlizzyToolbar = Settings.prevEnableBlizzyToolbar;
                 }
                 else
                 {
@@ -243,22 +245,22 @@ namespace LtScience
                     OnGuiAppLauncherDestroyed();
                     GameEvents.onGUIApplicationLauncherReady.Remove(OnGuiAppLauncherReady);
                     GameEvents.onGUIApplicationLauncherDestroyed.Remove(OnGuiAppLauncherDestroyed);
-                    LtSettings.prevEnableBlizzyToolbar = LtSettings.enableBlizzyToolbar;
+                    Settings.prevEnableBlizzyToolbar = Settings.enableBlizzyToolbar;
 
                     if (HighLogic.LoadedScene == GameScenes.SPACECENTER || HighLogic.LoadedSceneIsFlight)
                         _blizzyButton.Visible = true;
                 }
             }
-            else if (!LtSettings.enableBlizzyToolbar && LtSettings.prevEnableBlizzyToolbar)
+            else if (!Settings.enableBlizzyToolbar && Settings.prevEnableBlizzyToolbar)
             {
-                // Use Stock toolbar
+                // Use stock toolbar
                 if (HighLogic.LoadedScene == GameScenes.SPACECENTER || HighLogic.LoadedSceneIsFlight)
                     _blizzyButton.Visible = false;
 
                 GameEvents.onGUIApplicationLauncherReady.Add(OnGuiAppLauncherReady);
                 GameEvents.onGUIApplicationLauncherDestroyed.Add(OnGuiAppLauncherDestroyed);
                 OnGuiAppLauncherReady();
-                LtSettings.prevEnableBlizzyToolbar = LtSettings.enableBlizzyToolbar;
+                Settings.prevEnableBlizzyToolbar = Settings.enableBlizzyToolbar;
             }
         }
 
@@ -267,8 +269,8 @@ namespace LtScience
         {
             try
             {
-                // Setup Settings Button
-                if ((HighLogic.LoadedScene == GameScenes.SPACECENTER || HighLogic.LoadedSceneIsFlight) && _stockButton == null && !LtSettings.enableBlizzyToolbar)
+                // Setup settings button
+                if ((HighLogic.LoadedScene == GameScenes.SPACECENTER || HighLogic.LoadedSceneIsFlight) && _stockButton == null && !Settings.enableBlizzyToolbar)
                 {
                     _stockButton = ApplicationLauncher.Instance.AddModApplication(
                         OnToolbarButtonToggle,
@@ -276,15 +278,15 @@ namespace LtScience
                         DummyVoid, DummyVoid,
                         DummyVoid, DummyVoid,
                         ApplicationLauncher.AppScenes.SPACECENTER | ApplicationLauncher.AppScenes.FLIGHT,
-                        GameDatabase.Instance.GetTexture(StockOff, false));
+                        GameDatabase.Instance.GetTexture(_stockOff, false));
 
                     if (WindowSettings.showWindow)
-                        _stockButton.SetTexture(GameDatabase.Instance.GetTexture(WindowSettings.showWindow ? StockOn : StockOff, false));
+                        _stockButton.SetTexture(GameDatabase.Instance.GetTexture(WindowSettings.showWindow ? _stockOn : _stockOff, false));
                 }
             }
             catch (Exception ex)
             {
-                Util.LogMessage("LTAddon.OnGuiAppLauncherReady. Error: " + ex, Util.LogType.Error);
+                Utils.LogMessage($"Addon.OnGuiAppLauncherReady. Error: {ex}", Utils.LogType.Error);
             }
         }
 
@@ -300,7 +302,7 @@ namespace LtScience
             }
             catch (Exception ex)
             {
-                Util.LogMessage("LTAddon.OnGuiAppLauncherDestroyed. Error: " + ex, Util.LogType.Error);
+                Utils.LogMessage($"Addon.OnGuiAppLauncherDestroyed. Error: {ex}", Utils.LogType.Error);
             }
         }
 
@@ -309,19 +311,19 @@ namespace LtScience
         {
             try
             {
-                if (HighLogic.LoadedScene != GameScenes.SPACECENTER && HighLogic.LoadedScene != GameScenes.FLIGHT)
+                if (HighLogic.LoadedScene != GameScenes.SPACECENTER && !HighLogic.LoadedSceneIsFlight)
                     return;
 
                 WindowSettings.showWindow = !WindowSettings.showWindow;
 
-                if (LtSettings.enableBlizzyToolbar)
-                    _blizzyButton.TexturePath = WindowSettings.showWindow ? BlizzyOn : BlizzyOff;
+                if (Settings.enableBlizzyToolbar)
+                    _blizzyButton.TexturePath = WindowSettings.showWindow ? _blizzyOn : _blizzyOff;
                 else
-                    _stockButton.SetTexture(GameDatabase.Instance.GetTexture(WindowSettings.showWindow ? StockOn : StockOff, false));
+                    _stockButton.SetTexture(GameDatabase.Instance.GetTexture(WindowSettings.showWindow ? _stockOn : _stockOff, false));
             }
             catch (Exception ex)
             {
-                Util.LogMessage("LTAddon.OnToolbarButtonToggle. Error: " + ex, Util.LogType.Error);
+                Utils.LogMessage($"Addon.OnToolbarButtonToggle. Error: {ex}", Utils.LogType.Error);
             }
         }
 
@@ -331,29 +333,63 @@ namespace LtScience
 
         private void Display()
         {
-            string step = "";
+            string step = string.Empty;
             try
             {
                 step = "0 - Start";
-                if ((HighLogic.LoadedScene == GameScenes.SPACECENTER || HighLogic.LoadedSceneIsFlight) && ShowUi)
+                if ((HighLogic.LoadedScene == GameScenes.SPACECENTER || HighLogic.LoadedSceneIsFlight) && ShowUi && !Utils.IsPauseMenuOpen())
                 {
+                    step = "2 - Can show settings window - true";
                     if (WindowSettings.showWindow)
                     {
-                        step = "1 - Show Settings";
+                        step = "3 - Show settings window";
                         WindowSettings.position = GUILayout.Window(5234629, WindowSettings.position, WindowSettings.Display, WindowSettings.title, GUILayout.MinHeight(20));
                     }
+                    else
+                    {
+                        step = "3 - Hide settings window";
+                        WindowSettings.showWindow = false;
+                    }
+                }
+                else
+                {
+                    step = "2 - Can show settings window - false";
+                }
+
+                step = "1 - Show Interface";
+                if (Utils.CanShowSkylab())
+                {
+                    step = "4 - Can show Skylab window - true";
+                    if (WindowSkylab.showWindow)
+                    {
+                        step = "5 - Show Skylab window";
+                        WindowSkylab.position = GUILayout.Window(5234628, WindowSkylab.position, WindowSkylab.Display, WindowSkylab.title, GUILayout.MinHeight(20));
+                    }
+                    else
+                    {
+                        step = "5 - Hide Skylab window";
+                        WindowSkylab.showWindow = false;
+                    }
+                }
+                else
+                {
+                    step = "4 - Can show Skylab window - false";
                 }
             }
             catch (Exception ex)
             {
-                Util.LogMessage($"LTAddon.Display at or near step: {step}. Error: {ex.Message} \r\n\r\n{ex.StackTrace}", Util.LogType.Error);
+                if (!FrameErrTripped)
+                {
+                    Utils.LogMessage($"Addon.Display at or near step: {step}. Error: {ex.Message}\r\n\r\n{ex.StackTrace}", Utils.LogType.Error);
+                    FrameErrTripped = true;
+                }
             }
         }
 
         internal static void RepositionWindows()
         {
             RepositionWindow(ref WindowSettings.position);
-            RepositionWindow(ref WindowSkyLab.position);
+            RepositionWindow(ref WindowSkylab.position);
         }
 
         internal static void RepositionWindow(ref Rect position)
@@ -375,9 +411,9 @@ namespace LtScience
 
         #region Action Methods
 
-        private static bool ActivateBlizzyToolBar()
+        private bool ActivateBlizzyToolbar()
         {
-            if (!LtSettings.enableBlizzyToolbar)
+            if (!Settings.enableBlizzyToolbar)
                 return false;
 
             if (!ToolbarManager.ToolbarAvailable)
@@ -385,23 +421,21 @@ namespace LtScience
 
             try
             {
-                if (HighLogic.LoadedScene != GameScenes.SPACECENTER && HighLogic.LoadedScene != GameScenes.FLIGHT)
+                if (HighLogic.LoadedScene != GameScenes.SPACECENTER && !HighLogic.LoadedSceneIsFlight)
                     return true;
 
                 _blizzyButton = ToolbarManager.Instance.add("L-Tech", "Settings");
-                _blizzyButton.TexturePath = WindowSettings.showWindow ? BlizzyOn : BlizzyOff;
+                _blizzyButton.TexturePath = WindowSettings.showWindow ? _blizzyOn : _blizzyOff;
                 _blizzyButton.ToolTip = "L-Tech Settings Window";
-                _blizzyButton.Visibility = new GameScenesVisibility(GameScenes.SPACECENTER & GameScenes.FLIGHT);
+                _blizzyButton.Visibility = new GameScenesVisibility(GameScenes.SPACECENTER, GameScenes.FLIGHT);
                 _blizzyButton.Visible = true;
-                _blizzyButton.OnClick += e =>
-                {
-                    OnToolbarButtonToggle();
-                };
+                _blizzyButton.OnClick += e => { OnToolbarButtonToggle(); };
+
                 return true;
             }
-            catch
+            catch (Exception)
             {
-                // Blizzy Toolbar instantiation error - Ignore
+                // Blizzy toolbar instantiation error - Ignore
                 return false;
             }
         }

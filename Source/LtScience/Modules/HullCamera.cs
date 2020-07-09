@@ -1,27 +1,29 @@
 ﻿/*
  * L-Tech Scientific Industries Continued
- * Copyright © 2015-2017, Arne Peirs (Olympic1)
- * Copyright © 2016-2017, linuxgurugamer
+ * Copyright © 2015-2018, Arne Peirs (Olympic1)
+ * Copyright © 2016-2018, Jonathan Bayer (linuxgurugamer)
  * 
- * Kerbal Space Program is Copyright © 2011-2017 Squad. See http://kerbalspaceprogram.com/.
+ * Kerbal Space Program is Copyright © 2011-2018 Squad. See https://kerbalspaceprogram.com/.
  * This project is in no way associated with nor endorsed by Squad.
  * 
  * This file is part of Olympic1's L-Tech (Continued). Original author of L-Tech is 'ludsoe' on the KSP Forums.
- * This file was part of the original L-Tech and was written by ludsoe.
- * Copyright © 2015, ludsoe
+ * This file was not part of the original L-Tech but was written by Arne Peirs.
+ * Copyright © 2015-2018, Arne Peirs (Olympic1)
  * 
  * Continues to be licensed under the MIT License.
  * See <https://opensource.org/licenses/MIT> for full details.
  */
 
-using LtScience.InternalObjects;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using KSP.Localization;
+using LtScience.Utilities;
 using UnityEngine;
 
 namespace LtScience.Modules
 {
-    public class HullCamera : LtScienceBase
+    internal class HullCamera : ModuleScienceExperiment
     {
         #region Properties
 
@@ -35,7 +37,10 @@ namespace LtScience.Modules
         public Vector3 cameraUp = Vector3.up;
 
         [KSPField]
-        public string cameraTransformName = "";
+        public string cameraTransformName = string.Empty;
+
+        [KSPField(isPersistant = false)]
+        public bool usesFilm = false;
 
         [KSPField]
         public float picScienceVal = 1f;
@@ -44,26 +49,21 @@ namespace LtScience.Modules
         public float picDataVal = 1f;
 
         [KSPField]
-        public float cameraFoV = 60;
-
-        [KSPField(isPersistant = false)]
-        public float cameraClip = 0.01f;
+        public string specialExperimentName = "photo-";
 
         [KSPField]
-        public bool ltCamActive;
+        public string specialExperimentTitle = "#Anon# Picture";
 
-        [KSPField(isPersistant = false)]
-        public bool usesFilm = false;
-
-        [KSPField]
-        public string specialExperimentName;
-
-        [KSPField]
-        public string specialExperimentTitle;
-
-        public LtSettings config;
+        // Camera properties
+        private static readonly List<HullCamera> _cameras = new List<HullCamera>();
         private static HullCamera _currentCamera;
+        private static HullCamera _currentHandler;
+        private double _cameraDistance = double.NaN;
+        private readonly float cameraClip = 0.01f;
+        private readonly float cameraFoV = 60f;
+        private bool ltCamActive;
 
+        // FlightCamera properties
         private static FlightCamera _cam;
         private static Transform _origParent;
         private static Quaternion _origRotation = Quaternion.identity;
@@ -71,14 +71,10 @@ namespace LtScience.Modules
         private static float _origFoV;
         private static float _origClip;
 
+        // Screenshot properties
         private static readonly string folder = $"{KSPUtil.ApplicationRootPath}Screenshots/LTech/";
-
         private int _cnt;
-        private string _screenshotFile = "";
-
-        private string _jpgName = "";
-        private string _pngToConvert = "";
-
+        private string _screenshotFile = string.Empty;
         private bool _takingPic;
         private bool _tookPic;
         private float _timer;
@@ -98,25 +94,25 @@ namespace LtScience.Modules
 
         private static void ToMainCamera()
         {
-            if ((_cam != null) && (_cam.transform != null))
+            if (_cam != null)
             {
                 _cam.transform.parent = _origParent;
                 _cam.transform.localPosition = _origPosition;
                 _cam.transform.localRotation = _origRotation;
-                Camera.main.nearClipPlane = _origClip;
                 _cam.SetFoV(_origFoV);
                 _cam.ActivateUpdate();
 
                 if (FlightGlobals.ActiveVessel != null && HighLogic.LoadedSceneIsFlight)
-                    _cam.SetTargetTransform(FlightGlobals.ActiveVessel.transform);
+                    _cam.SetTarget(FlightGlobals.ActiveVessel.transform, FlightCamera.TargetMode.Vessel);
 
                 _origParent = null;
-
-                if (_currentCamera != null)
-                    _currentCamera.ltCamActive = false;
-
-                _currentCamera = null;
             }
+
+            if (_currentCamera != null)
+                _currentCamera.ltCamActive = false;
+
+            _currentCamera = null;
+            Camera.main.nearClipPlane = _origClip;
         }
 
         private static void LeaveCamera()
@@ -132,39 +128,42 @@ namespace LtScience.Modules
             if (part.State == PartStates.DEAD)
                 return;
 
-            ltCamActive = !ltCamActive;
-
-            if (!ltCamActive && (_cam != null))
+            if (ltCamActive)
+            {
                 ToMainCamera();
-            else
-            {
-                if ((_currentCamera != null) && (_currentCamera != this))
-                    _currentCamera.ltCamActive = false;
-
-                _currentCamera = this;
-                BeginPic();
-            }
-        }
-
-        private void DetectAnomaly()
-        {
-            if (usesFilm && !LtsUseResources("CameraFilm", 1))
-            {
-                Util.DisplayScreenMsg("Need more Camera Film!");
                 return;
             }
 
-            print("Detecting anomalies...");
-            PQSCity[] planetAnomalies = vessel.mainBody.GetComponentsInChildren<PQSCity>(true);
+            _currentCamera = this;
+            ltCamActive = true;
+        }
 
-            double nearest = double.PositiveInfinity;
-            PQSCity anomaly = null;
+        private void DetectAnomalies()
+        {
+            Utils.DisplayScreenMsg(Localizer.Format("#autoLOC_LTech_Hullcam_001"));
+            PQSSurfaceObject[] anomalies = vessel.mainBody.pqsSurfaceObjects;
 
-            // Find the closest anomaly
-            foreach (PQSCity anom in planetAnomalies)
+            if (anomalies != null)
             {
-                print("Anomaly: " + anom.name);
-                double dist = (anom.transform.position - part.transform.position).magnitude;
+                GetClosestAnomaly(anomalies, out double nearest, out PQSSurfaceObject anomaly);
+
+                if (anomaly != null)
+                    Utils.DisplayScreenMsg(Localizer.Format("#autoLOC_LTech_Hullcam_002", anomaly.SurfaceObjectName, nearest));
+            }
+            else
+            {
+                Utils.DisplayScreenMsg(Localizer.Format("#autoLOC_LTech_Hullcam_003"));
+            }
+        }
+
+        private void GetClosestAnomaly(PQSSurfaceObject[] anomalies, out double nearest, out PQSSurfaceObject anomaly)
+        {
+            nearest = double.PositiveInfinity;
+            anomaly = null;
+
+            foreach (PQSSurfaceObject anom in anomalies)
+            {
+                double dist = Vector3d.Distance(anom.transform.position, FlightGlobals.ship_position);
 
                 if (dist < nearest)
                 {
@@ -172,42 +171,48 @@ namespace LtScience.Modules
                     anomaly = anom;
                 }
             }
+        }
 
+        private void DoExperiment()
+        {
             string expId = "Space";
-            string expName = "";
+            string expName = "Picture";
             float expValue = picScienceVal;
             float expData = picDataVal;
 
-            if (anomaly != null)
+            PQSSurfaceObject[] anomalies = vessel.mainBody.pqsSurfaceObjects;
+            GetClosestAnomaly(anomalies, out double nearest, out PQSSurfaceObject anomaly);
+
+            if (anomaly != null && nearest < 2500)
             {
-                print("Closest anomaly is: " + anomaly.name + " and is " + nearest + " m away!");
+                double targetAngleTo = Vector3d.Dot(part.transform.up + cameraForward, (anomaly.transform.position - FlightGlobals.ship_position).normalized);
 
-                if (nearest < 2500)
+                if (targetAngleTo > 1)
                 {
-                    double targetAngleTo = Vector3d.Dot(part.transform.up + cameraForward, (anomaly.transform.position - part.transform.position).normalized);
-                    print("Angle: " + targetAngleTo + " degrees");
-
-                    if (targetAngleTo > 1)
-                    {
-                        expId = vessel.mainBody.name + "-" + anomaly.name;
-                        expValue = (float)(Math.Abs(2500 - nearest) * (targetAngleTo - 1) / 100) * picScienceVal;
-                        expName = anomaly.name;
-                        expData = 20f * picDataVal;
-                    }
+                    expId = $"{vessel.mainBody.name}-{anomaly.SurfaceObjectName}";
+                    expValue = (float)(Math.Abs(2500.0 - nearest) * (targetAngleTo - 1.0) / 100.0) * picScienceVal;
+                    expName = anomaly.SurfaceObjectName;
+                    expData = 20f * picDataVal;
                 }
             }
 
-            print(expName + " is worth: " + expValue);
+            Utils.DisplayScreenMsg(Localizer.Format("#autoLOC_LTech_Hullcam_004", expName, expValue));
 
             experiment.id = specialExperimentName + expId;
             experiment.experimentTitle = specialExperimentTitle.Replace("#Anon#", expName);
             experiment.baseValue = expValue;
             experiment.dataScale = expData;
-            DeployExperiment();
+            base.DeployExperiment();
         }
 
         private void BeginPic()
         {
+            if (usesFilm && part.RequestResource("CameraFilm", 1) < 1)
+            {
+                Utils.DisplayScreenMsg(Localizer.Format("#autoLOC_LTech_Hullcam_005"));
+                return;
+            }
+
             _takingPic = true;
             _tookPic = false;
             _timer = 0;
@@ -215,114 +220,119 @@ namespace LtScience.Modules
 
         private void TakeScreenshot()
         {
-            string pngName;
-
-            int resolution = (int)LtSettings.resolution;
+            int resolution = (int)Settings.resolution;
             resolution = (int)Math.Floor((decimal)resolution);
 
             // Prevent smaller then 1 resolutions to be taken
             if (resolution < 1)
                 resolution = 1;
 
-            if (_tookPic && LtSettings.hideUiOnScreenshot && File.Exists(_screenshotFile))
+            if (_tookPic && Settings.hideUiOnScreenshot && File.Exists(_screenshotFile))
                 GameEvents.onShowUI.Fire();
 
-            // If there is a png file waiting to be converted, then don't do another screenshot
-            if (_pngToConvert != "" && LtSettings.convertToJpg)
+            // Check if the folder exists
+            if (!Directory.Exists(folder))
             {
-                if (File.Exists(_pngToConvert))
+                try
                 {
-                    Util.ConvertToJpg(_pngToConvert, _jpgName, LtSettings.jpgQuality);
-                    FileInfo file = new FileInfo(_pngToConvert);
-                    if (!LtSettings.keepOriginalPng)
-                        file.Delete();
-
-                    _pngToConvert = "";
-                    _takingPic = false;
+                    Directory.CreateDirectory(folder);
+                }
+                catch (Exception ex)
+                {
+                    Utils.LogMessage($"HullCamera.TakeScreenshot. Error: {ex}", Utils.LogType.Error);
+                    return;
                 }
             }
-            else
+
+            string pngName;
+
+            // Check if the file exists
+            do
             {
-                _takingPic = true;
+                _cnt++;
+                string sName = $"Screenshot_{_cnt}";
+                pngName = $"{Path.GetFullPath(folder)}{sName}.png";
+            } while (File.Exists(pngName));
 
-                // Check if the folder exists
-                if (!Directory.Exists(folder))
-                {
-                    try
-                    {
-                        Directory.CreateDirectory(folder);
-                    }
-                    catch (Exception ex)
-                    {
-                        Util.LogMessage("HullCamera.TakeScreenshot. Error: " + ex, Util.LogType.Error);
-                        return;
-                    }
-                }
+            if (Settings.hideUiOnScreenshot)
+                GameEvents.onHideUI.Fire();
 
-                // Check if the file exists
-                do
-                {
-                    _cnt++;
-                    string sName = "Screenshot_" + _cnt;
-                    pngName = Path.GetFullPath(folder) + sName + ".png";
-                    _jpgName = Path.GetFullPath(folder) + sName + ".jpg";
-
-                } while (File.Exists(pngName) || File.Exists(_jpgName));
-
-                if (LtSettings.hideUiOnScreenshot)
-                    GameEvents.onHideUI.Fire();
-
-                _tookPic = true;
-                _screenshotFile = pngName;
-                Application.CaptureScreenshot(pngName, resolution);
-
-                if (LtSettings.convertToJpg)
-                    _pngToConvert = pngName;
-            }
+            _tookPic = true;
+            _screenshotFile = pngName;
+            Application.CaptureScreenshot(pngName, resolution);
         }
 
         #endregion
 
         #region KSP Events
 
-        [KSPEvent(guiActive = true, guiName = "Take RL picture")]
+        [KSPEvent(guiActive = true, guiName = "#autoLOC_LTech_Hullcam_006")]
         public void ActivateCameraEvent()
         {
             ActivateCamera();
         }
 
-        [KSPEvent(guiActive = true, guiName = "Take photo")]
-        public void DetectAnomalyEvent()
+        [KSPEvent(guiActive = false, guiName = "#autoLOC_LTech_Hullcam_007")]
+        public new void DeployExperiment()
         {
-            DetectAnomaly();
+            BeginPic();
+        }
+
+        [KSPEvent(guiActive = true, guiName = "#autoLOC_LTech_Hullcam_008")]
+        public void DetectAnomaliesEvent()
+        {
+            DetectAnomalies();
         }
 
         #endregion
 
         #region KSP Actions
 
-        [KSPAction("Take RL picture")]
-        public void ActivateCameraAction(KSPActionParam ap)
+        [KSPAction("#autoLOC_LTech_Hullcam_006")]
+        public void ActivateCameraAction(KSPActionParam param)
         {
             ActivateCamera();
         }
 
-        [KSPAction("Take photo")]
-        public void DetectAnomalyAction(KSPActionParam ap)
+        [KSPAction("#autoLOC_LTech_Hullcam_007")]
+        public new void DeployAction(KSPActionParam param)
         {
-            DetectAnomaly();
+            BeginPic();
+        }
+
+        [KSPAction("#autoLOC_LTech_Hullcam_008")]
+        public void DetectAnomaliesAction(KSPActionParam param)
+        {
+            DetectAnomalies();
         }
 
         #endregion
 
         #region Event Handlers
 
-        public new void Update()
+        public void LateUpdate()
         {
             if (vessel == null)
                 return;
 
-            if (!_takingPic && _tookPic && LtSettings.hideUiOnScreenshot)
+            if (_currentHandler == null)
+                _currentHandler = this;
+
+            if (_currentCamera != null)
+            {
+                if (_currentCamera.vessel != FlightGlobals.ActiveVessel)
+                {
+                    Vector3d vesselPos = FlightGlobals.ActiveVessel.orbit.getRelativePositionAtUT(Planetarium.GetUniversalTime()) + FlightGlobals.ActiveVessel.orbit.referenceBody.position;
+                    Vector3d targetPos = _currentCamera.vessel.orbit.getRelativePositionAtUT(Planetarium.GetUniversalTime()) + _currentCamera.vessel.orbit.referenceBody.position;
+
+                    _cameraDistance = Vector3d.Distance(vesselPos, targetPos);
+
+                    if (_cameraDistance >= 2480.0)
+                        LeaveCamera();
+                }
+            }
+
+            if (!_takingPic && _tookPic && Settings.hideUiOnScreenshot)
                 GameEvents.onShowUI.Fire();
 
             if (_takingPic)
@@ -332,10 +342,10 @@ namespace LtScience.Modules
                 if (_timer > 0.1f && !_tookPic)
                     TakeScreenshot();
 
-                if (_timer > LtSettings.shuttertime)
+                if (_timer > Settings.shuttertime)
                 {
                     ToMainCamera();
-                    DetectAnomaly();
+                    DoExperiment();
                     _takingPic = false;
                 }
             }
@@ -343,10 +353,26 @@ namespace LtScience.Modules
 
         public void FixedUpdate()
         {
-            if (vessel == null)
+            if (vessel == null || MapView.MapIsEnabled)
                 return;
 
-            if (MapView.MapIsEnabled)
+            if (part.State == PartStates.DEAD)
+            {
+                if (ltCamActive)
+                    LeaveCamera();
+
+                Events["ActivateCameraEvent"].guiActive = false;
+                Events["DeployExperiment"].guiActive = false;
+                Events["DetectAnomaliesEvent"].guiActive = false;
+                ltCamActive = false;
+                CleanUp();
+                return;
+            }
+
+            Events["ActivateCameraEvent"].guiName = ltCamActive ? Localizer.Format("#autoLOC_LTech_Hullcam_009") : Localizer.Format("#autoLOC_LTech_Hullcam_006");
+            Events["DeployExperiment"].guiActive = ltCamActive;
+
+            if (!ltCamActive)
                 return;
 
             if (_cam == null)
@@ -358,52 +384,80 @@ namespace LtScience.Modules
                     return;
             }
 
-            if ((_cam != null) && (_origParent == null))
-            {
+            if (_origParent == null)
                 SaveMainCamera();
-            }
 
-            if (ltCamActive && (part.State == PartStates.DEAD))
-            {
-                LeaveCamera();
-                CleanUp();
-            }
-
-            if ((_origParent != null) && (_cam != null) && ltCamActive)
-            {
-                _cam.SetTargetNone();
-                _cam.transform.parent = cameraTransformName.Length > 0 ? part.FindModelTransform(cameraTransformName) : part.transform;
-                _cam.DeactivateUpdate();
-                _cam.transform.localPosition = cameraPosition;
-                _cam.transform.localRotation = Quaternion.LookRotation(cameraForward, cameraUp);
-                _cam.SetFoV(cameraFoV);
-                Camera.main.nearClipPlane = cameraClip;
-            }
+            _cam.SetTargetNone();
+            _cam.transform.parent = cameraTransformName.Length > 0 ? part.FindModelTransform(cameraTransformName) : part.transform;
+            _cam.DeactivateUpdate();
+            _cam.transform.localPosition = cameraPosition;
+            _cam.transform.localRotation = Quaternion.LookRotation(cameraForward, cameraUp);
+            _cam.SetFoV(cameraFoV);
+            Camera.main.nearClipPlane = cameraClip;
 
             OnFixedUpdate();
         }
 
         public override void OnStart(StartState state)
         {
+            GameEvents.onGameSceneLoadRequested.Add(OnGameSceneLoadRequested);
+
+            if (state != StartState.None && state != StartState.Editor)
+            {
+                if (!_cameras.Contains(this))
+                    _cameras.Add(this);
+
+                vessel.OnJustAboutToBeDestroyed += CleanUp;
+            }
+
             part.OnJustAboutToBeDestroyed += CleanUp;
             part.OnEditorDestroy += CleanUp;
 
-            Events["DeployExperiment"].active = false;
-            Events["DeployExperiment"].guiActive = false;
-            Actions["DeployAction"].active = false;
+            if (part.State == PartStates.DEAD)
+            {
+                Events["ActivateCameraEvent"].guiActive = false;
+                Events["DeployExperiment"].guiActive = false;
+                Events["DetectAnomaliesEvent"].guiActive = false;
+            }
 
             base.OnStart(state);
         }
 
+        private void OnGameSceneLoadRequested(GameScenes gameScene)
+        {
+            if (_currentCamera != null)
+            {
+                _cameras.Clear();
+                _currentCamera = null;
+            }
+        }
+
         private void CleanUp()
         {
+            if (_currentHandler == this)
+                _currentHandler = null;
+
             if (_currentCamera == this)
                 LeaveCamera();
 
-            if (ltCamActive)
+            if (_cameras.Contains(this))
             {
-                _currentCamera = null;
-                ToMainCamera();
+                _cameras.Remove(this);
+
+                if (_cameras.Count < 1 && _origParent != null && !ltCamActive)
+                {
+                    _currentCamera = null;
+                    ToMainCamera();
+                }
+            }
+        }
+
+        public void OnVesselDestroy()
+        {
+            if (_cameras.Contains(this))
+            {
+                _cameras.Remove(this);
+                LeaveCamera();
             }
         }
 
@@ -414,7 +468,7 @@ namespace LtScience.Modules
 
         public override string GetInfo()
         {
-            return usesFilm ? "Mode: FilmBased" : "Mode: Digital";
+            return usesFilm ? Localizer.Format("#autoLOC_LTech_Hullcam_010") : Localizer.Format("#autoLOC_LTech_Hullcam_011");
         }
 
         #endregion

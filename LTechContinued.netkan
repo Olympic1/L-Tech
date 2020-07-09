@@ -1,9 +1,9 @@
 {
-    "spec_version"   : "v1.4",
-    "$kref"          : "#/ckan/github/Olympic1/L-Tech",
-    "$vref"          : "#/ckan/ksp-avc",
-    "identifier"     : "LTechContinued",
-    "name"           : "L-Tech Scientific Industries Continued",
+    "spec_version": "v1.4",
+    "$kref": "#/ckan/github/Olympic1/L-Tech",
+    "$vref": "#/ckan/ksp-avc",
+    "identifier": "LTechContinued",
+    "name": "L-Tech Scientific Industries Continued",
     "author": [
         "Olympic1",
         "linuxgurugamer"
@@ -12,26 +12,26 @@
         "homepage": "http://forum.kerbalspaceprogram.com/index.php?/topic/49319-0240-l-tech-scientific-industries-v220/&page=15#comment-2824326",
         "spacedock": "https://spacedock.info/mod/227/L-Tech%20Scientific%20Industries%20Continued"
     },
-    "license"         : "MIT",
+    "license": "MIT",
     "x_netkan_force_v": true,
-    "install" :
+    "install":
     [
         {
-            "find"       : "LTech",
-            "install_to" : "GameData"
+            "find": "LTech",
+            "install_to": "GameData"
         }
     ],
-    "depends" :
+    "depends":
     [
-        { "name" : "ModuleManager", "min_version" : "2.7.5" }
+        { "name": "ModuleManager", "min_version" : "2.8.1" }
     ],
-    "suggests" :
+    "suggests":
     [
-        { "name" : "ConnectedLivingSpace" },
-        { "name" : "HullcamVDS" },
-        { "name" : "KIS" },
-        { "name" : "RasterPropMonitor-Core" },
-        { "name" : "TweakScale" }
+        { "name": "ConnectedLivingSpace" },
+        { "name": "HullcamVDS" },
+        { "name": "KIS" },
+        { "name": "RasterPropMonitor-Core" },
+        { "name": "TweakScale" }
     ],
     "conflicts":
     [

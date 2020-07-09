@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2013-2017, Maik Schreiber
+Copyright (c) 2013-2016, Maik Schreiber
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -29,8 +29,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 
-// TODO: Change to your plugin's namespace here.
-namespace LtScience.APIClients
+namespace LtScience.Utilities
 {
 
 
@@ -218,6 +217,11 @@ namespace LtScience.APIClients
         {
             get;
         }
+        bool IsHovering
+        {
+            get;
+        }
+
 
         /// <summary>
         /// Whether this button is currently enabled (clickable) or not. This does not affect the player's ability to
@@ -274,7 +278,7 @@ namespace LtScience.APIClients
         /// <code>
         /// IButton button = ...
         /// button.OnClick += (e) => {
-        ///     Debug.Log("button clicked, mouseButton: " + e.MouseButton);
+        ///     Debug.Log($"button clicked, mouseButton: {e.MouseButton}");
         /// };
         /// </code>
         /// </example>
@@ -678,6 +682,13 @@ namespace LtScience.APIClients
                 return (bool)types.button.effectivelyVisibleProperty.GetValue(realButton, null);
             }
         }
+        public bool IsHovering
+        {
+            get
+            {
+                return (bool)types.button.isHoveringProperty.GetValue(realButton, null);
+            }
+        }
 
         public bool Enabled
         {
@@ -827,9 +838,10 @@ namespace LtScience.APIClients
             AssemblyLoader.loadedAssemblies.TypeOperation(t =>
             {
                 if (t.FullName == name)
+                {
                     type = t;
+                }
             });
-
             return type;
         }
 
@@ -864,6 +876,7 @@ namespace LtScience.APIClients
         internal readonly PropertyInfo visibleProperty;
         internal readonly PropertyInfo visibilityProperty;
         internal readonly PropertyInfo effectivelyVisibleProperty;
+        internal readonly PropertyInfo isHoveringProperty;
         internal readonly PropertyInfo enabledProperty;
         internal readonly PropertyInfo importantProperty;
         internal readonly PropertyInfo drawableProperty;
@@ -883,6 +896,8 @@ namespace LtScience.APIClients
             visibleProperty = ToolbarTypes.getProperty(iButtonType, "Visible");
             visibilityProperty = ToolbarTypes.getProperty(iButtonType, "Visibility");
             effectivelyVisibleProperty = ToolbarTypes.getProperty(iButtonType, "EffectivelyVisible");
+            isHoveringProperty = ToolbarTypes.getProperty(iButtonType, "IsHovering");
+
             enabledProperty = ToolbarTypes.getProperty(iButtonType, "Enabled");
             importantProperty = ToolbarTypes.getProperty(iButtonType, "Important");
             drawableProperty = ToolbarTypes.getProperty(iButtonType, "Drawable");

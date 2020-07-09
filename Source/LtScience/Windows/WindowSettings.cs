@@ -1,106 +1,76 @@
 ﻿/*
  * L-Tech Scientific Industries Continued
- * Copyright © 2015-2017, Arne Peirs (Olympic1)
- * Copyright © 2016-2017, linuxgurugamer
+ * Copyright © 2015-2018, Arne Peirs (Olympic1)
+ * Copyright © 2016-2018, Jonathan Bayer (linuxgurugamer)
  * 
- * Kerbal Space Program is Copyright © 2011-2017 Squad. See http://kerbalspaceprogram.com/.
+ * Kerbal Space Program is Copyright © 2011-2018 Squad. See https://kerbalspaceprogram.com/.
  * This project is in no way associated with nor endorsed by Squad.
  * 
  * This file is part of Olympic1's L-Tech (Continued). Original author of L-Tech is 'ludsoe' on the KSP Forums.
  * This file was not part of the original L-Tech but was written by Arne Peirs.
- * Copyright © 2015-2017, Arne Peirs (Olympic1)
+ * Copyright © 2015-2018, Arne Peirs (Olympic1)
  * 
  * Continues to be licensed under the MIT License.
  * See <https://opensource.org/licenses/MIT> for full details.
  */
 
-using LtScience.APIClients;
-using LtScience.InternalObjects;
 using System;
-using System.Globalization;
-using System.Text.RegularExpressions;
+using KSP.Localization;
+using LtScience.Utilities;
 using UnityEngine;
 
 namespace LtScience.Windows
 {
     internal static class WindowSettings
     {
-        internal const string title = "L-Tech Settings";
+        internal static string title = "L-Tech Settings";
         internal static Rect position = new Rect(20, 60, 0, 0);
         internal static bool showWindow;
 
-        // Tooltips
-        internal static string toolTip = "";
-        private static bool toolTipActive;
-        private static bool showToolTips = true;
-        private static bool _canShowToolTips = true;
-
         // GUI tooltip and label support
-        private static string _label = "";
-        private static string _toolTip = "";
+        private static string _label = string.Empty;
+        private static string _tooltip = string.Empty;
         private static GUIContent _guiLabel;
-        private static Rect _rect;
+
+        private const int height = 25;
+        private const int width = 250;
 
         internal static void Display(int windowId)
         {
             try
             {
-                // Reset Tooltip active flag
-                toolTipActive = false;
+                title = Localizer.Format("#autoLOC_LTech_Settings_001");
 
-                Rect rect = new Rect(position.width - 29, 4, 25, 25);
-                if (GUI.Button(rect, new GUIContent("X", "Close Window.\r\nSettings will not be saved.")))
+                Rect rect = new Rect(position.width - 20, 4, 16, 16);
+                _label = "x";
+                _tooltip = Localizer.Format("#autoLOC_LTech_Settings_tt_001");
+                _guiLabel = new GUIContent(_label, _tooltip);
+                if (GUI.Button(rect, _guiLabel))
                 {
-                    toolTip = "";
                     if (HighLogic.LoadedScene == GameScenes.SPACECENTER || HighLogic.LoadedSceneIsFlight)
-                        LtAddon.OnToolbarButtonToggle();
+                        Addon.OnToolbarButtonToggle();
                     else
                         showWindow = false;
                 }
-                if (Event.current.type == EventType.Repaint && showToolTips)
-                    toolTip = LtToolTips.SetActiveToolTip(rect, GUI.tooltip, ref toolTipActive, 10);
 
                 GUILayout.BeginVertical();
 
                 DisplaySettings();
 
-                GUILayout.BeginHorizontal();
-                if (GUILayout.Button("Save", GUILayout.Height(30)))
-                {
-                    LtSettings.SaveSettings();
-                    if (HighLogic.LoadedScene == GameScenes.SPACECENTER || HighLogic.LoadedSceneIsFlight)
-                        LtAddon.OnToolbarButtonToggle();
-                    else
-                        showWindow = false;
-                }
-
-                if (GUILayout.Button("Cancel", GUILayout.Height(30)))
-                {
-                    if (HighLogic.LoadedScene == GameScenes.SPACECENTER || HighLogic.LoadedSceneIsFlight)
-                        LtAddon.OnToolbarButtonToggle();
-                    else
-                        showWindow = false;
-                }
-                GUILayout.EndHorizontal();
-
-                GUILayout.BeginHorizontal();
-                if (GUILayout.Button("Reset to default", GUILayout.Height(30)))
-                {
-                    LtSettings.ResetSettings();
-                    if (HighLogic.LoadedScene == GameScenes.SPACECENTER || HighLogic.LoadedSceneIsFlight)
-                        LtAddon.OnToolbarButtonToggle();
-                    else
-                        showWindow = false;
-                }
-                GUILayout.EndHorizontal();
+                DisplayActions();
 
                 GUILayout.EndVertical();
+
                 GUI.DragWindow(new Rect(0, 0, Screen.width, 30));
-                LtAddon.RepositionWindow(ref position);
+                Addon.RepositionWindow(ref position);
             }
             catch (Exception ex)
             {
-                Util.LogMessage($"WindowSettings.Display. Error: {ex.Message} \r\n\r\n{ex.StackTrace}", Util.LogType.Error);
+                if (!Addon.FrameErrTripped)
+                {
+                    Utils.LogMessage($"WindowSettings.Display. Error: {ex.Message}\r\n\r\n{ex.StackTrace}", Utils.LogType.Error);
+                    Addon.FrameErrTripped = true;
+                }
             }
         }
 
@@ -108,172 +78,142 @@ namespace LtScience.Windows
         {
             try
             {
-                // Reset Tooltip active flag
-                toolTipActive = false;
-                _canShowToolTips = showToolTips;
+                _label = Localizer.Format("#autoLOC_LTech_Settings_002", Settings.curVersion);
+                GUILayout.Label(_label, Style.LabelHeader, GUILayout.Width(width));
+                GUILayout.Label("__________________________________", Style.LabelStyleHardRule, GUILayout.Width(width), GUILayout.Height(10));
 
-                const int scrollX = 20;
-
-                GUILayout.Label("L-Tech v" + LtSettings.curVersion, LtStyle.LabelTabHeader, GUILayout.Width(280));
-                GUILayout.Label("\r\n___________________________________", LtStyle.LabelStyleHardRule, GUILayout.Width(280), GUILayout.Height(10));
-
-                // Blizzy Toolbar
+                // Blizzy toolbar
                 if (!ToolbarManager.ToolbarAvailable)
                 {
-                    if (LtSettings.enableBlizzyToolbar)
-                        LtSettings.enableBlizzyToolbar = false;
+                    if (Settings.enableBlizzyToolbar)
+                        Settings.enableBlizzyToolbar = false;
+
                     GUI.enabled = false;
                 }
                 else
-                    GUI.enabled = true;
-
-                _label = "Enable Blizzy Toolbar";
-                _toolTip = "Switches the toolbar icon over to Blizzy's toolbar, if installed.";
-                _toolTip += "\r\nIf Blizzy's toolbar is not installed, option is not selectable.";
-                _guiLabel = new GUIContent(_label, _toolTip);
-                LtSettings.enableBlizzyToolbar = GUILayout.Toggle(LtSettings.enableBlizzyToolbar, _guiLabel, GUILayout.Width(280));
-                _rect = GUILayoutUtility.GetLastRect();
-                if (Event.current.type == EventType.Repaint && _canShowToolTips)
-                    toolTip = LtToolTips.SetActiveToolTip(_rect, GUI.tooltip, ref toolTipActive, scrollX);
-
-                GUI.enabled = true;
-                // Tooltips
-                _label = "Enable Tooltips";
-                _toolTip = "Turns tooltips On or Off.";
-                _toolTip += "\r\nThis is a global setting for all windows.";
-                _guiLabel = new GUIContent(_label, _toolTip);
-                LtSettings.showToolTips = GUILayout.Toggle(LtSettings.showToolTips, _guiLabel, GUILayout.Width(280));
-                _rect = GUILayoutUtility.GetLastRect();
-                if (Event.current.type == EventType.Repaint && _canShowToolTips)
-                    toolTip = LtToolTips.SetActiveToolTip(_rect, GUI.tooltip, ref toolTipActive, scrollX);
-
-                GUILayout.Label("", GUILayout.Height(10));
-                GUILayout.Label("Screenshot Settings:", GUILayout.Height(20));
-
-                // Hide UI On Screenshot
-                _label = "Hide UI On Screenshot";
-                _toolTip = "Hides or shows the UI when taking a screenshot.";
-                _toolTip += "\r\nThis setting only affects the UI when taking a RL picture.";
-                _guiLabel = new GUIContent(_label, _toolTip);
-                LtSettings.hideUiOnScreenshot = GUILayout.Toggle(LtSettings.hideUiOnScreenshot, _guiLabel, GUILayout.Width(280));
-                _rect = GUILayoutUtility.GetLastRect();
-                if (Event.current.type == EventType.Repaint && _canShowToolTips)
-                    toolTip = LtToolTips.SetActiveToolTip(_rect, GUI.tooltip, ref toolTipActive, scrollX);
-
-                // Convert to JPG
-                _label = "Convert To JPG";
-                _toolTip = "Converts the screenshot to a jpg.";
-                _toolTip += "\r\nWhen disabled, the screenshot will be saved as a png.";
-                _guiLabel = new GUIContent(_label, _toolTip);
-                LtSettings.convertToJpg = GUILayout.Toggle(LtSettings.convertToJpg, _guiLabel, GUILayout.Width(280));
-                _rect = GUILayoutUtility.GetLastRect();
-                if (Event.current.type == EventType.Repaint && _canShowToolTips)
-                    toolTip = LtToolTips.SetActiveToolTip(_rect, GUI.tooltip, ref toolTipActive, scrollX);
-
-                if (!LtSettings.convertToJpg)
-                    GUI.enabled = false;
-
-                // Keep Original PNG
-                _label = "Keep Original PNG";
-                _toolTip = "Keeps the original png along with the converted jpg.";
-                _toolTip += "\r\nWhen disabled, the png will be deleted after the conversion.";
-                _toolTip += "\r\nIf Convert To JPG is disabled, this option is not selectable.";
-                _guiLabel = new GUIContent(_label, _toolTip);
-                LtSettings.keepOriginalPng = GUILayout.Toggle(LtSettings.keepOriginalPng, _guiLabel, GUILayout.Width(280));
-                _rect = GUILayoutUtility.GetLastRect();
-                if (Event.current.type == EventType.Repaint && _canShowToolTips)
-                    toolTip = LtToolTips.SetActiveToolTip(_rect, GUI.tooltip, ref toolTipActive, scrollX);
-
-                // JPG Quality
-                float newQuality;
-                GUILayout.BeginHorizontal();
-                GUILayout.Space(40);
-                _label = "JPG Quality:";
-                _toolTip = "Sets the quality of the jpg when converting the screenshot.";
-                _toolTip += "\r\nRange is from 1 - 100. Default is 75.";
-                _toolTip += "\r\nIf Convert To JPG is disabled, this option is not selectable.";
-                _guiLabel = new GUIContent(_label, _toolTip);
-                GUILayout.Label(_guiLabel, GUILayout.Width(140), GUILayout.Height(20));
-                _rect = GUILayoutUtility.GetLastRect();
-                if (Event.current.type == EventType.Repaint && _canShowToolTips)
-                    toolTip = LtToolTips.SetActiveToolTip(_rect, GUI.tooltip, ref toolTipActive, scrollX);
-
-                // Lets parse the string
-                string strQuality = LtSettings.jpgQuality.ToString();
-
-                strQuality = GUILayout.TextField(strQuality, 3, GUILayout.Width(80), GUILayout.Height(20));
-
-                // Make sure we can only type numbers
-                strQuality = Regex.Replace(strQuality, @"[^0-9]", "");
-                GUILayout.EndHorizontal();
-
-                // Keep the quality between 1 and 100
-                if (float.TryParse(strQuality, out newQuality))
                 {
-                    if (newQuality < 1)
-                        newQuality = 1;
-
-                    if (newQuality > 100)
-                        newQuality = 100;
-
-                    LtSettings.jpgQuality = (int)newQuality;
+                    GUI.enabled = true;
                 }
 
+                _label = Localizer.Format("#autoLOC_LTech_Settings_003");
+                _tooltip = Localizer.Format("#autoLOC_LTech_Settings_tt_003");
+                _guiLabel = new GUIContent(_label, _tooltip);
+                Settings.enableBlizzyToolbar = GUILayout.Toggle(Settings.enableBlizzyToolbar, _guiLabel, GUILayout.Width(width));
+
                 GUI.enabled = true;
-                GUILayout.Label("", GUILayout.Height(10));
-                GUILayout.Label("Camera Settings:", GUILayout.Height(20));
 
-                // Camera Resolution
-                _label = "Camera Resolution:  ";
-                _label += $"{100 * LtSettings.resolution:0}" + " %";
-                _toolTip = "Sets the resolution of the screenshot. Default is current resolution";
-                _toolTip += "\r\nThe resolution is measured in game window resolutions.";
-                _guiLabel = new GUIContent(_label, _toolTip);
-                GUILayout.Label(_guiLabel, GUILayout.Width(280), GUILayout.Height(20));
-                _rect = GUILayoutUtility.GetLastRect();
-                if (Event.current.type == EventType.Repaint && _canShowToolTips)
-                    toolTip = LtToolTips.SetActiveToolTip(_rect, GUI.tooltip, ref toolTipActive, scrollX);
+                GUILayout.Space(10);
+                GUILayout.Label(Localizer.Format("#autoLOC_LTech_Settings_004"), Style.LabelStyleBold);
 
-                // Resolution Slider Control
+                // Hide UI on screenshot
+                _label = Localizer.Format("#autoLOC_LTech_Settings_005");
+                _tooltip = Localizer.Format("#autoLOC_LTech_Settings_tt_005");
+                _guiLabel = new GUIContent(_label, _tooltip);
+                Settings.hideUiOnScreenshot = GUILayout.Toggle(Settings.hideUiOnScreenshot, _guiLabel, GUILayout.Width(width));
+
+                GUILayout.Space(10);
+                GUILayout.Label(Localizer.Format("#autoLOC_LTech_Settings_006"), Style.LabelStyleBold);
+
+                // Camera resolution
+                _label = Localizer.Format("#autoLOC_LTech_Settings_007", (100 * Settings.resolution).ToString("0"), (Settings.resolution * Screen.width).ToString("0"), (Settings.resolution * Screen.height).ToString("0"));
+                _tooltip = Localizer.Format("#autoLOC_LTech_Settings_tt_007a");
+                _guiLabel = new GUIContent(_label, _tooltip);
+                GUILayout.Label(_guiLabel, GUILayout.Width(width));
+
+                // Resolution slider control
                 GUILayout.BeginHorizontal();
-                GUILayout.Label(LtSettings.minResolution.ToString(CultureInfo.InvariantCulture), GUILayout.Width(20), GUILayout.Height(15));
-                LtSettings.resolution = GUILayout.HorizontalSlider(LtSettings.resolution, LtSettings.minResolution, LtSettings.maxResolution, GUILayout.Width(230), GUILayout.Height(20));
-                _label = LtSettings.maxResolution.ToString(CultureInfo.InvariantCulture);
-                _toolTip = "Slide control to change the resolution shown above.";
-                _guiLabel = new GUIContent(_label, _toolTip);
-                GUILayout.Label(_guiLabel, GUILayout.Width(20), GUILayout.Height(15));
-                _rect = GUILayoutUtility.GetLastRect();
-                if (Event.current.type == EventType.Repaint && _canShowToolTips)
-                    toolTip = LtToolTips.SetActiveToolTip(_rect, GUI.tooltip, ref toolTipActive, scrollX);
+                _label = (100 * Settings.minResolution).ToString("0");
+                _tooltip = Localizer.Format("#autoLOC_LTech_Settings_tt_007b");
+                _guiLabel = new GUIContent(_label, _tooltip);
+                GUILayout.Label(_guiLabel, GUILayout.Width(20), GUILayout.Height(20));
+                Settings.resolution = GUILayout.HorizontalSlider(Settings.resolution, Settings.minResolution, Settings.maxResolution, GUILayout.Width(width - 45), GUILayout.Height(20));
+                _label = (100 * Settings.maxResolution).ToString("0");
+                _tooltip = Localizer.Format("#autoLOC_LTech_Settings_tt_007b");
+                _guiLabel = new GUIContent(_label, _tooltip);
+                GUILayout.Label(_guiLabel, GUILayout.Width(25), GUILayout.Height(20));
                 GUILayout.EndHorizontal();
 
-                // Camera Shuttertime
-                _label = "Camera Shuttertime:  ";
-                _label += $"{LtSettings.shuttertime:0.#}" + " sec";
-                _toolTip = "Sets the amount the game 'freezes' in camera view when taking a screenshot.";
-                _toolTip += "\r\nThe shuttertime is timed in real time seconds.";
-                _guiLabel = new GUIContent(_label, _toolTip);
-                GUILayout.Label(_guiLabel, GUILayout.Width(280), GUILayout.Height(20));
-                _rect = GUILayoutUtility.GetLastRect();
-                if (Event.current.type == EventType.Repaint && _canShowToolTips)
-                    toolTip = LtToolTips.SetActiveToolTip(_rect, GUI.tooltip, ref toolTipActive, scrollX);
+                // Camera shuttertime
+                _label = Localizer.Format("#autoLOC_LTech_Settings_008", Settings.shuttertime.ToString("0.#"));
+                _tooltip = Localizer.Format("#autoLOC_LTech_Settings_tt_008a");
+                _guiLabel = new GUIContent(_label, _tooltip);
+                GUILayout.Label(_guiLabel, GUILayout.Width(width));
 
-                // Shuttertime Slider Control
+                // Shuttertime slider control
                 GUILayout.BeginHorizontal();
-                GUILayout.Label(LtSettings.minShuttertime.ToString(CultureInfo.InvariantCulture), GUILayout.Width(20), GUILayout.Height(15));
-                LtSettings.shuttertime = GUILayout.HorizontalSlider(LtSettings.shuttertime, LtSettings.minShuttertime, LtSettings.maxShuttertime, GUILayout.Width(230), GUILayout.Height(20));
-                _label = LtSettings.maxShuttertime.ToString(CultureInfo.InvariantCulture);
-                _toolTip = "Slide control to change the shuttertime shown above.";
-                _guiLabel = new GUIContent(_label, _toolTip);
-                GUILayout.Label(_guiLabel, GUILayout.Width(20), GUILayout.Height(15));
-                _rect = GUILayoutUtility.GetLastRect();
-                if (Event.current.type == EventType.Repaint && _canShowToolTips)
-                    toolTip = LtToolTips.SetActiveToolTip(_rect, GUI.tooltip, ref toolTipActive, scrollX);
+                _label = Settings.minShuttertime.ToString("0.#");
+                _tooltip = Localizer.Format("#autoLOC_LTech_Settings_tt_008b");
+                _guiLabel = new GUIContent(_label, _tooltip);
+                GUILayout.Label(_guiLabel, GUILayout.Width(20), GUILayout.Height(20));
+                Settings.shuttertime = GUILayout.HorizontalSlider(Settings.shuttertime, Settings.minShuttertime, Settings.maxShuttertime, GUILayout.Width(width - 45), GUILayout.Height(20));
+                _label = Settings.maxShuttertime.ToString("0");
+                _tooltip = Localizer.Format("#autoLOC_LTech_Settings_tt_008b");
+                _guiLabel = new GUIContent(_label, _tooltip);
+                GUILayout.Label(_guiLabel, GUILayout.Width(25), GUILayout.Height(20));
                 GUILayout.EndHorizontal();
             }
             catch (Exception ex)
             {
-                Util.LogMessage($"WindowSettings.DisplaySettings. Error: {ex.Message} \r\n\r\n{ex.StackTrace}", Util.LogType.Error);
+                if (!Addon.FrameErrTripped)
+                {
+                    Utils.LogMessage($"WindowSettings.DisplaySettings. Error: {ex.Message}\r\n\r\n{ex.StackTrace}", Utils.LogType.Error);
+                    Addon.FrameErrTripped = true;
+                }
+            }
+        }
+
+        private static void DisplayActions()
+        {
+            try
+            {
+                GUILayout.BeginHorizontal();
+
+                // Save button
+                _label = Localizer.Format("#autoLOC_LTech_Settings_009");
+                _tooltip = Localizer.Format("#autoLOC_LTech_Settings_tt_009");
+                _guiLabel = new GUIContent(_label, _tooltip);
+                if (GUILayout.Button(_guiLabel, GUILayout.Height(height)))
+                {
+                    Settings.SaveSettings();
+
+                    if (HighLogic.LoadedScene == GameScenes.SPACECENTER || HighLogic.LoadedSceneIsFlight)
+                        Addon.OnToolbarButtonToggle();
+                    else
+                        showWindow = false;
+                }
+
+                // Cancel button
+                _label = Localizer.Format("#autoLOC_LTech_Settings_010");
+                _tooltip = Localizer.Format("#autoLOC_LTech_Settings_tt_010");
+                _guiLabel = new GUIContent(_label, _tooltip);
+                if (GUILayout.Button(_guiLabel, GUILayout.Height(height)))
+                {
+                    if (HighLogic.LoadedScene == GameScenes.SPACECENTER || HighLogic.LoadedSceneIsFlight)
+                        Addon.OnToolbarButtonToggle();
+                    else
+                        showWindow = false;
+                }
+
+                GUILayout.EndHorizontal();
+
+                GUILayout.BeginHorizontal();
+
+                // Reset button
+                _label = Localizer.Format("#autoLOC_LTech_Settings_011");
+                _tooltip = Localizer.Format("#autoLOC_LTech_Settings_tt_011");
+                _guiLabel = new GUIContent(_label, _tooltip);
+                if (GUILayout.Button(_guiLabel, GUILayout.Height(height)))
+                    Settings.ResetSettings();
+
+                GUILayout.EndHorizontal();
+            }
+            catch (Exception ex)
+            {
+                if (!Addon.FrameErrTripped)
+                {
+                    Utils.LogMessage($"WindowSettings.DisplayActions. Error: {ex.Message}\r\n\r\n{ex.StackTrace}", Utils.LogType.Error);
+                    Addon.FrameErrTripped = true;
+                }
             }
         }
     }

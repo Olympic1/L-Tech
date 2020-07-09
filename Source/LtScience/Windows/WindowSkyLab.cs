@@ -1,108 +1,139 @@
 ﻿/*
  * L-Tech Scientific Industries Continued
- * Copyright © 2015-2017, Arne Peirs (Olympic1)
- * Copyright © 2016-2017, linuxgurugamer
+ * Copyright © 2015-2018, Arne Peirs (Olympic1)
+ * Copyright © 2016-2018, Jonathan Bayer (linuxgurugamer)
  * 
- * Kerbal Space Program is Copyright © 2011-2017 Squad. See http://kerbalspaceprogram.com/.
+ * Kerbal Space Program is Copyright © 2011-2018 Squad. See https://kerbalspaceprogram.com/.
  * This project is in no way associated with nor endorsed by Squad.
  * 
  * This file is part of Olympic1's L-Tech (Continued). Original author of L-Tech is 'ludsoe' on the KSP Forums.
  * This file was not part of the original L-Tech but was written by Arne Peirs.
- * Copyright © 2015-2017, Arne Peirs (Olympic1)
+ * Copyright © 2015-2018, Arne Peirs (Olympic1)
  * 
  * Continues to be licensed under the MIT License.
  * See <https://opensource.org/licenses/MIT> for full details.
  */
 
-using LtScience.InternalObjects;
-using LtScience.Modules;
 using System;
+using KSP.Localization;
+using LtScience.Modules;
+using LtScience.Utilities;
 using UnityEngine;
 
 namespace LtScience.Windows
 {
-    public class WindowSkyLab : MonoBehaviour
+    internal static class WindowSkylab
     {
-        private const string title = "SkyLab Experiments";
+        internal static string title = "L-Tech Skylab";
         internal static Rect position = new Rect(20, 60, 0, 0);
         internal static bool showWindow;
 
-        public SkyLabConfig configcore;
-        public SkyLabExperiment activeLab;
+        // GUI tooltip and label support
+        private static string _label = string.Empty;
+        private static string _tooltip = string.Empty;
+        private static GUIContent _guiLabel;
 
-        public void DrawGui()
-        {
-            GUI.skin = HighLogic.Skin;
+        private const int height = 25;
 
-            string step = "";
-            try
-            {
-                step = "0 - Start";
-                if (Util.CanShowSkyLab())
-                {
-                    step = "2 - Can Show SkyLab - true";
-                    if (showWindow)
-                    {
-                        if (ValidLab())
-                        {
-                            step = "3 - Show SkyLab";
-                            position = GUILayout.Window(5234628, position, Display, title, LtStyle.WindowStyle, GUILayout.MinHeight(20));
-                        }
-                        else
-                        {
-                            step = "3 - Hide SkyLab";
-                            showWindow = false;
-                        }
-                    }
-                }
-                else
-                    step = "2 - Can Show SkyLab - false";
-            }
-            catch (Exception ex)
-            {
-                Util.LogMessage($"LTAddon.Display at or near step: {step}. Error: {ex.Message} \r\n\r\n{ex.StackTrace}", Util.LogType.Error);
-            }
-        }
+        private static SkylabExperiment _labExp;
 
-        private bool ValidLab()
-        {
-            if (activeLab == null)
-                return false;
-
-            return true;
-        }
-
-        private void Display(int windowId)
+        internal static void Display(int windowId)
         {
             try
             {
-                Rect rect = new Rect(position.width - 29, 4, 25, 25);
-                if (GUI.Button(rect, new GUIContent("X", "Close Window")))
+                title = Localizer.Format("#autoLOC_LTech_Skylab_001");
+
+                Rect rect = new Rect(position.width - 20, 4, 16, 16);
+                _label = "x";
+                _tooltip = Localizer.Format("#autoLOC_LTech_Skylab_tt_001");
+                _guiLabel = new GUIContent(_label, _tooltip);
+                if (GUI.Button(rect, _guiLabel))
                     showWindow = false;
 
                 GUILayout.BeginVertical();
-                GUI.enabled = true;
 
-                GUILayout.Space(10);
-                foreach (SkyLabExperimentData node in SkyLabConfig.Experiments)
-                {
-                    GUILayout.BeginHorizontal();
-                    if (GUILayout.Button("Study " + node.Name, GUILayout.Height(30)))
-                    {
-                        activeLab.DoScienceThing(node);
-                        showWindow = false;
-                    }
-                    GUILayout.Space(5);
-                    GUILayout.EndHorizontal();
-                }
+                DisplayExperiments();
+
+                DisplayActions();
 
                 GUILayout.EndVertical();
+
                 GUI.DragWindow(new Rect(0, 0, Screen.width, 30));
-                LtAddon.RepositionWindow(ref position);
+                Addon.RepositionWindow(ref position);
             }
             catch (Exception ex)
             {
-                Util.LogMessage($"WindowSkyLab.Display. Error: {ex.Message} \r\n\r\n{ex.StackTrace}", Util.LogType.Error);
+                if (!Addon.FrameErrTripped)
+                {
+                    Utils.LogMessage($"WindowSkylab.Display. Error: {ex.Message}\r\n\r\n{ex.StackTrace}", Utils.LogType.Error);
+                    Addon.FrameErrTripped = true;
+                }
+            }
+        }
+
+        private static void DisplayExperiments()
+        {
+            try
+            {
+                // Load experiments
+                _labExp = new SkylabExperiment();
+
+                // Model Rockets
+                _label = Localizer.Format("#autoLOC_LTech_Skylab_002");
+                _tooltip = Localizer.Format("#autoLOC_LTech_Skylab_tt_002");
+                _guiLabel = new GUIContent(_label, _tooltip);
+                if (GUILayout.Button(_guiLabel, GUILayout.Height(height)))
+                    _labExp.DoScience("modelRockets", 20, "ModelRockets", 1);
+
+                // Micro Gravity
+                _label = Localizer.Format("#autoLOC_LTech_Skylab_003");
+                _tooltip = Localizer.Format("#autoLOC_LTech_Skylab_tt_003");
+                _guiLabel = new GUIContent(_label, _tooltip);
+                if (GUILayout.Button(_guiLabel, GUILayout.Height(height)))
+                    _labExp.DoScience("microGrav", 10, "ClipBoards", 1);
+
+                // Kerbal Habitation
+                _label = Localizer.Format("#autoLOC_LTech_Skylab_004");
+                _tooltip = Localizer.Format("#autoLOC_LTech_Skylab_tt_004");
+                _guiLabel = new GUIContent(_label, _tooltip);
+                if (GUILayout.Button(_guiLabel, GUILayout.Height(height)))
+                    _labExp.DoScience("habCheck", 100, "ClipBoards", 1);
+
+                // Fire Combustion
+                _label = Localizer.Format("#autoLOC_LTech_Skylab_005");
+                _tooltip = Localizer.Format("#autoLOC_LTech_Skylab_tt_005");
+                _guiLabel = new GUIContent(_label, _tooltip);
+                if (GUILayout.Button(_guiLabel, GUILayout.Height(height)))
+                    _labExp.DoScience("fireCheck", 50, "ClipBoards", 1);
+            }
+            catch (Exception ex)
+            {
+                Utils.LogMessage($"WindowSkylab.DisplayExperiments. Error: {ex.Message}\r\n\r\n{ex.StackTrace}", Utils.LogType.Error);
+            }
+        }
+
+        private static void DisplayActions()
+        {
+            try
+            {
+                GUILayout.BeginHorizontal();
+
+                // Close button
+                _label = Localizer.Format("#autoLOC_LTech_Skylab_006");
+                _tooltip = Localizer.Format("#autoLOC_LTech_Skylab_tt_006");
+                _guiLabel = new GUIContent(_label, _tooltip);
+                if (GUILayout.Button(_guiLabel, GUILayout.Height(height)))
+                    showWindow = false;
+
+                GUILayout.EndHorizontal();
+            }
+            catch (Exception ex)
+            {
+                if (!Addon.FrameErrTripped)
+                {
+                    Utils.LogMessage($"WindowSkylab.DisplayActions. Error: {ex.Message}\r\n\r\n{ex.StackTrace}", Utils.LogType.Error);
+                    Addon.FrameErrTripped = true;
+                }
             }
         }
     }

@@ -1,3 +1,10 @@
+v5.0 - 12 Sep 2018
+--------------------
+* Updated for KSP 1.3
+* Added localization
+* Fixed some camera issues
+* Rewrote Skylab code
+
 v4.5 - 24 Apr 2017
 --------------------
 * Hotfix for crash
@@ -28,7 +35,7 @@ v4.1 - 12 Oct 2016
 * Removed unused code
 * Updated access modifiers
 * Fixed possible bug that prevented generating Insight
-* Comment code that spammed log
+* Commented out code that spammed log
 * Updated ToolbarWrapper
 * Added Alternate Resource Panel icons
 * Added license into source files
@@ -52,13 +59,10 @@ v4.0 - 17 Sep 2016
 	* Merged LtToolbar into LtScience
 	* Dropped Toolbar dependency
 	* Ability to switch between Blizzy and Stock Toolbar
-	* Hovering over options shows tooltips
 	* Better logging
 	* Cameras take screenshots faster
 	* Screenshots now save in Screenshots folder
 	* Ability to hide UI on screenshot
-	* Ability to save screenshots as png or jpg
-	* Prep for Life Support options
 
 v3.0 - 24 Aug 2016
 ------------------
@@ -71,6 +75,6 @@ v2.25 - 4 Feb 2015
 * Redid all the cfg's
 * ARP support (Icons will follow later)
 * Snacks support
-* CLS support for the SkyLab
+* CLS support for the Skylab
 * Better KAS support
 * Camera's now work with RasterPropMonitor and VDSHullCam

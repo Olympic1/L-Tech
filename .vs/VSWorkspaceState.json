@@ -1,0 +1,16 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\GameData",
+    "\\GameData\\LTech",
+    "\\GameData\\LTech\\Parts",
+    "\\GameData\\LTech\\Parts\\Science",
+    "\\GameData\\LTech\\Parts\\Science\\ExtCamera",
+    "\\GameData\\LTech\\Parts\\Science\\RadioReciever",
+    "\\LtScience",
+    "\\LtScience\\Utilities",
+    "\\LtScience\\Windows"
+  ],
+  "SelectedNode": "\\GameData\\LTech\\Parts\\Science\\ExtCamera\\ExtCam2.cfg",
+  "PreviewInSolutionExplorer": false
+}

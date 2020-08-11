@@ -1,0 +1,6 @@
+
+What to do when something changes about the craft while running an experiment
+
+
+module for off-rails
+

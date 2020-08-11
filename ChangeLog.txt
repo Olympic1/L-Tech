@@ -1,0 +1,51 @@
+Changelog
+
+0.5.1 
+	Replaced obsolete RequestResource with updated version
+	Replaced the obsolete CaptureScreenshot with the updated version
+	Reordered the directories & solution file
+	Replaced all toolbar code with using the ToolbarController
+	Removed all references to blizzy
+	Added support for Clickthroughfix
+	Moved buttons into PluginData/Buttons
+	Moved Settings.cfg into PluginData
+	Replaced internal logging code with KSP_Log
+	Fixed model reference for the LT_ExtCam1 (old model was deprecated)
+
+	On the Skylab part, replaced crewCabinInternals with the MobileProcessingLabInt, with all 6 seats unlocked
+	on the Skylab part, made the "Open experiment GUI" be able to close the GUI as well, text is updated
+
+	Fixed issue of multiple science experiments being overwritten in Skylab:
+		Redid the WindowSkylab into a MonoBehaviour
+		Now adds WindowSkylab as a Component when open, and destroys it when done
+	Added stock settings page
+	Added option for alternate skin
+	Reduced Insight research rate by 99.9%, from 100 to 0.1
+
+	New Dependencies
+		ClickThroughBlocker
+		ToolbarController
+		SpaceTuxLibrary
+
+	Added LTECH stanza to Skylab experiments,contains all experiment info including UI strings
+	Added code to read LTECH stanzas
+	In WindowSkylab, DisplayExperiments(), replaced individual hard-coded sections for each experiment with loop using data read from the Skylab Experiments
+	Removed Snacks entirely
+	Removed Insight completely
+	Replaced hard-coded window IDs with generated from WindowHelper
+
+	Thanks to the following modders for remaking all the parts:
+		Forum user @CobaltWolf for the following parts:
+			Kerb-1    film-based camera
+			I-C External camera    no film
+			Radiation Sensor, about the size of a lunchbox
+			Radio-Spyatron    when opened, about 1-2m in diameter
+			Radio receiver
+		Forum user @SuicidalInstanity for these:
+			L-Tech Skylab
+			Science container
+			S-125 Sample Return Bin
+		Forum user @Angel-125 for the following parts:
+			The Clipboard tanks, radial & 2.5m
+			The Model rockets tanks, radial & 2.5m
+			The Seed tanks, radial & 2.5m

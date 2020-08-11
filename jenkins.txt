@@ -31,7 +31,7 @@
 1:LTech, LTech.version, L-Tech
 
 # 2:PROJNAME, PROJFILE, VERSIONFILE, PLUGINSFOLDER
-2:L-Tech,LtScience/LtScience.csproj,LTech.version,GameData/LTech/Plugins
+2:LtScience,LtScience/LtScience.csproj,LTech.version,GameData/LTech/Plugins
 
 # 3:SOURCEFILE, DESTDIR
 3:LTech.version,GameData/LTech

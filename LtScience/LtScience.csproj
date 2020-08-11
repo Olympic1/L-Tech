@@ -63,8 +63,8 @@
     <Compile Include="InstallChecker.cs" />
     <Compile Include="Modules\HullCamera.cs" />
     <Compile Include="Modules\Radio.cs" />
-    <Compile Include="Modules\SkylabCore.cs" />
-    <Compile Include="Modules\SkylabExperiment.cs" />
+    <Compile Include="Modules\SkyLabCore.cs" />
+    <Compile Include="Modules\SkyLabExperiment.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RegisterToolbar.cs" />
     <Compile Include="Utilities\Settings.cs" />
@@ -72,7 +72,7 @@
     <Compile Include="Utilities\Style.cs" />
     <Compile Include="Utilities\Utils.cs" />
     <Compile Include="Windows\WindowSettings.cs" />
-    <Compile Include="Windows\WindowSkylab.cs" />
+    <Compile Include="Windows\WindowSkyLab.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="AssemblyVersion.tt">

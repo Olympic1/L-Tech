@@ -1,30 +1,26 @@
 {
-    "NAME":"L-Tech Scientific Industries",
-    "URL":"http://raw.githubusercontent.com/Olympic1/L-Tech/master/GameData/LTech/LTech.version",
-    "DOWNLOAD":"https://spacedock.info/mod/227",
-    "GITHUB":
-    {
-        "USERNAME":"Olympic1",
-        "REPOSITORY":"L-Tech",
-        "ALLOW_PRE_RELEASE":false
-    },
-    "VERSION":
-    {
-        "MAJOR":0,
-        "MINOR":5,
-        "PATCH":0,
-        "BUILD":0
-    },
-    "KSP_VERSION":
-    {
-        "MAJOR":1,
-        "MINOR":8,
-        "PATCH":1
-    },
-    "KSP_VERSION_MIN":
-    {
-        "MAJOR":1,
-        "MINOR":8,
-        "PATCH":0
-    }
+  "NAME": "L-Tech Scientific Industries",
+  "URL": "https://raw.githubusercontent.com/linuxgurugamer/L-Tech/master/LTech.version",
+  "DOWNLOAD": "https://spacedock.info/mod/227",
+  "GITHUB": {
+    "USERNAME": "linuxgurugamer",
+    "REPOSITORY": "L-Tech",
+    "ALLOW_PRE_RELEASE": false
+  },
+  "VERSION": {
+    "MAJOR": 0,
+    "MINOR": 5,
+    "PATCH": 1,
+    "BUILD": 0
+  },
+  "KSP_VERSION": {
+    "MAJOR": 1,
+    "MINOR": 8,
+    "PATCH": 1
+  },
+  "KSP_VERSION_MIN": {
+    "MAJOR": 1,
+    "MINOR": 8,
+    "PATCH": 0
+  }
 }

@@ -1,5 +1,8 @@
 Changelog
 
+0.5.1.1
+	Fixed name of radial tanks to show what it holds
+
 0.5.1 
 	Replaced obsolete RequestResource with updated version
 	Replaced the obsolete CaptureScreenshot with the updated version

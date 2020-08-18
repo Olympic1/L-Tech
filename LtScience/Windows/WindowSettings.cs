@@ -43,7 +43,7 @@ namespace LtScience.Windows
             {
                 title = Localizer.Format("#autoLOC_LTech_Settings_001");
 
-                Rect rect = new Rect(position.width - 20, 4, 16, 16);
+                Rect rect = new Rect(position.width - 20, 4, 18, 18);
                 _label = "x";
                 _tooltip = Localizer.Format("#autoLOC_LTech_Settings_tt_001");
                 _guiLabel = new GUIContent(_label, _tooltip);
@@ -80,9 +80,9 @@ namespace LtScience.Windows
         {
             try
             {
-                _label = Localizer.Format("#autoLOC_LTech_Settings_002", Settings.curVersion);
-                GUILayout.Label(_label, Style.LabelHeader, GUILayout.Width(width));
-                GUILayout.Label("__________________________________", Style.LabelStyleHardRule, GUILayout.Width(width), GUILayout.Height(10));
+                //_label = Localizer.Format("#autoLOC_LTech_Settings_002", Settings.curVersion);
+                //GUILayout.Label(_label, Style.LabelHeader, GUILayout.Width(width));
+                //GUILayout.Label("__________________________________", Style.LabelStyleHardRule, GUILayout.Width(width), GUILayout.Height(10));
 
                 GUI.enabled = true;
 

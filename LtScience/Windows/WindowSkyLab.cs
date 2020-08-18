@@ -15,6 +15,8 @@
  */
 
 using System;
+using System.Collections.Generic;
+using System.Collections;
 using System.Linq.Expressions;
 using KSP.Localization;
 using LtScience.Modules;
@@ -29,6 +31,13 @@ namespace LtScience.Windows
 {
     internal class WindowSkylab : MonoBehaviour
     {
+        internal class WinPos
+        {
+            internal int id;
+            internal Rect position;
+        }
+        
+        //internal static  List<WinPos>
         internal Rect position = new Rect(20, 60, 0, 0);
 
         // GUI tooltip and label support
@@ -69,7 +78,7 @@ namespace LtScience.Windows
         {
             if (visible)
             {
-                if (!HighLogic.CurrentGame.Parameters.CustomParams<LTech>().useAltSkin)
+                if (!HighLogic.CurrentGame.Parameters.CustomParams<LTech_1>().useAltSkin)
                     GUI.skin = HighLogic.Skin;
                 position = ClickThruBlocker.GUILayoutWindow(winID, this.position, Display, Localizer.Format("#autoLOC_LTech_Skylab_Title"), GUILayout.MinHeight(20));
             }

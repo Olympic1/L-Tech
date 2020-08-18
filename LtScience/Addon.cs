@@ -229,7 +229,7 @@ namespace LtScience
             {
                 try
                 {
-                    if (!HighLogic.CurrentGame.Parameters.CustomParams<LTech>().useAltSkin)
+                    if (!HighLogic.CurrentGame.Parameters.CustomParams<LTech_1>().useAltSkin)
                         GUI.skin = HighLogic.Skin;
 
                     Style.SetupGuiStyles();

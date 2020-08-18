@@ -4,13 +4,14 @@
     "\\GameData",
     "\\GameData\\LTech",
     "\\GameData\\LTech\\Parts",
+    "\\GameData\\LTech\\Parts\\Payload",
+    "\\GameData\\LTech\\Parts\\Payload\\Tanks",
     "\\GameData\\LTech\\Parts\\Science",
     "\\GameData\\LTech\\Parts\\Science\\ExtCamera",
-    "\\GameData\\LTech\\Parts\\Science\\RadioReciever",
     "\\LtScience",
     "\\LtScience\\Utilities",
     "\\LtScience\\Windows"
   ],
-  "SelectedNode": "\\GameData\\LTech\\Parts\\Science\\ExtCamera\\ExtCam2.cfg",
+  "SelectedNode": "\\GameData\\LTech\\Parts\\Payload\\Tanks\\radialTank-1.cfg",
   "PreviewInSolutionExplorer": false
 }

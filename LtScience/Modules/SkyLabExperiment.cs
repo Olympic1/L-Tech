@@ -502,7 +502,7 @@ namespace LtScience.Modules
                     double amtNeeded = Math.Min(
                         experiments[activeExperiment.activeExpid].resourceUsageRate * resourceRequest,
                          experiments[activeExperiment.activeExpid].resourceAmtRequired - expStatuses[activeExperiment.Key].processedResource);
-
+                    amtNeeded = amtNeeded * KCT_Interface.ResearchTimeAdjustment();
 
                     double resource = part.RequestResource(experiments[activeExperiment.activeExpid].neededResourceName, amtNeeded);
                     expStatuses[activeExperiment.Key].processedResource += resource;

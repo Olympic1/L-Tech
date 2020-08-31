@@ -9,6 +9,7 @@ namespace LtScience.Utilities
     // HighLogic.CurrentGame.Parameters.CustomParams<LTech>().useAltSkin
     public class LTech_1 : GameParameters.CustomParameterNode
     {
+        internal static LTech_1 fetch = null;
         public override string Title { get { return ""; } }
         public override GameParameters.GameMode GameMode { get { return GameParameters.GameMode.ANY; } }
         public override string Section { get { return "L-Tech"; } }
@@ -35,6 +36,7 @@ namespace LtScience.Utilities
         }
         public override bool Interactible(MemberInfo member, GameParameters parameters)
         {
+            fetch = this;
             return true;
         }
         public override IList ValidValues(MemberInfo member) { return null; }
@@ -76,7 +78,7 @@ namespace LtScience.Utilities
         {
             if (member.Name == "useKCTResearch" || member.Name == "useKCTDevelopment" || member.Name == "CostAdj")
             {
-                return HighLogic.CurrentGame.Parameters.CustomParams<LTech_1>().useEfficiencyMultiplier;
+                return LTech_1.fetch.useEfficiencyMultiplier;
             }
 
             return true;

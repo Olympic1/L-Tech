@@ -1,5 +1,18 @@
 Changelog
 
+0.5.1.4 
+	Increased mass of seeds & updated descripion
+	Added "Biome dependent" to experiment definitions
+	Science values adjusted for all skylab experiments
+	Science dataScale adjusted for all skylab experiments
+	Fixed checks for number of crew needed
+	Added enforcement of number of crew needed
+	Added check for minimum aggregrated science experience needed in scientists in lab
+	Reduced frequency of updates to SkyLabCore PAW to 4x/sec
+	Reduced frequency of updates to SkylabExperiment PAW to 4x/sec
+	Added check for stock CAMERA_NEXT key (defaults to V), also added check for stock CAMERA_RESET (defaults to BackQuote)
+	
+
 0.5.1.3
 	Fixed nullref when going into options while creating a new game
 

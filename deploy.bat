@@ -18,4 +18,3 @@ copy /Y %VERSIONFILE% %GAMEDATA%\%GAMEDIR%
 rem For some strange reason, the xcopy wasn't properly overwriting the dll
 del "%H%\GameData\%GAMEDIR%\Plugins\LtScience.dll"
 xcopy /y /s /I %GAMEDATA%\%GAMEDIR% "%H%\GameData\%GAMEDIR%"
-

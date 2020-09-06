@@ -43,9 +43,9 @@ namespace LtScience
 
         // Toolbar icons
         private const string _blizzyOff = "LTech/PluginData/Buttons/LT_blizzy_off";
-        private const string _blizzyOn = "LTech/PluginData/Buttons/LT_blizzy_on";
-        private const string _stockOff = "LTech/PluginData/Buttons/LT_stock_off";
-        private const string _stockOn = "LTech/PluginData/Buttons/LT_stock_on";
+        private const string _blizzyOn =  "LTech/PluginData/Buttons/LT_blizzy_on";
+        private const string _stockOff =  "LTech/PluginData/Buttons/LT_stock_off";
+        private const string _stockOn =   "LTech/PluginData/Buttons/LT_stock_on";
 
         // Repeating error latch
         internal static bool FrameErrTripped;
@@ -419,7 +419,8 @@ namespace LtScience
                 //    return;
 
                 WindowSettings.showWindow = !WindowSettings.showWindow;
-                toolbarControl.SetTexture(WindowSettings.showWindow ? _stockOn : _stockOff, WindowSettings.showWindow ? _blizzyOn : _blizzyOff);
+                toolbarControl.SetTexture(WindowSettings.showWindow ? _stockOn : _stockOff, 
+                                          WindowSettings.showWindow ? _blizzyOn : _blizzyOff);
             }
             catch (Exception ex)
             {

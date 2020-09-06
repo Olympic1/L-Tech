@@ -4,3 +4,27 @@ What to do when something changes about the craft while running an experiment
 
 module for off-rails
 
+Blizzy toolbar button issue	
+	When adding the L-Tech icon to Blizzy's Toolbar, it looks fine... but clicking it to open the settings window causes it to go magenta (as in, broken texture magenta.) Clicking it again to close the settings window does not make it revert, but saving settings does cause the icon to go back to normal.
+
+Skylab claims to be short on crew
+	I have three level 2 scientists in my SkyLab, but it claims that I'm short on crew - 2/3, to be specific. It doesn't appear to be tied to the scientists themselves, since I can swap any of them out to my Hitchhiker and it'll still show 2/3. It correctly reflects 1/3 scientists if I remove two of them from the module.
+
+	Even with that, I apparently am able to study science. In fact, I can still study science with only two scientists in the module.
+
+Balance issue
+	I just got 2000 science (1400 transmitted) from studying microgravity, and I'm at 50% science on the game settings. That seems like... just a little bit too much? Taking a look at it, I see this in Skylab_ScienceDefs.cfg:
+
+        id = microGrav
+        title = #autoLOC_LTech_MicroGrav_Title
+        baseValue = 100
+        scienceCap = 400
+        dataScale = 0.2
+    Misplaced a decimal point somewhere, maybe? 2000 is definitely 50% of 4000, and 4000 is 10x 400 (i.e. "scienceCap".)
+    I am using RSS right now, but all the rest of the science values are what I expect them to be, i.e. painfully and depressingly low. I don't think that's affecting things, unless there's some hardcoding somewhere.
+
+Yet another edit: I also noticed that the "Plant Seeds" resource is about 10x as dense as the other ones - intentional, or no?
+
+the science window doesn't imply that the experiments are biome-dependent. No wonder I went off the rails thinking it was time-dependent.
+
+If you have the PAW up and switch to camera view, and then close the PAW, you have no way to return to normal flight view - at least I can tell. This one might just be a lack of education than a bug - none of the camera switch controls I tried worked to return me from the camera view.

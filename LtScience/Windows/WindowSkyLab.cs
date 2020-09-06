@@ -31,13 +31,14 @@ namespace LtScience.Windows
 {
     internal class WindowSkylab : MonoBehaviour
     {
+#if false
         internal class WinPos
         {
             internal int id;
             internal Rect position;
         }
-        
-        //internal static  List<WinPos>
+        internal static  List<WinPos>
+#endif
         internal Rect position = new Rect(20, 60, 0, 0);
 
         // GUI tooltip and label support

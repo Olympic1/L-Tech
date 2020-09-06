@@ -301,6 +301,8 @@ namespace LtScience.Modules
         internal ActiveExperiment activeExperiment = null;
         internal static bool experimentStarted = false;
 
+        SkylabCore skylabcoreModule = null;
+
         #region Properties
 
         [KSPField]
@@ -317,8 +319,9 @@ namespace LtScience.Modules
 
         #region Event Handlers
 
-        public override void OnAwake()
+        public new void Awake()
         {
+            base.Awake();
             GameEvents.onGamePause.Add(OnPause);
             GameEvents.onGameUnpause.Add(OnUnpause);
         }
@@ -362,18 +365,28 @@ namespace LtScience.Modules
             Log.Info("SkylabExperiments, found: " + experiments.Count);
         }
 
-        public override void OnStart(StartState state)
+        public void Start()
         {
             if (HighLogic.LoadedSceneIsFlight)
             {
                 Log.Info("SkylabExperiment.OnStart");
+                skylabcoreModule = part.FindModuleImplementing<SkylabCore>();
+                StartCoroutine("SlowUpdate");
+            }
+        }
+        IEnumerator SlowUpdate()
+        {
+            while (true)
+            {
                 UpdateUI();
+                yield return new WaitForSecondsRealtime(0.25f);
             }
         }
 
         public void OnDestroy()
         {
             Log.Info("SkylabExperiment.OnDestroy");
+            StopCoroutine("SlowUpdate");
             GameEvents.onGamePause.Remove(OnPause);
             GameEvents.onGameUnpause.Remove(OnUnpause);
         }
@@ -383,6 +396,12 @@ namespace LtScience.Modules
             //Events["OpenGui"].active = true;
             Events["EvaCollect"].active = _storedData.Count > 0;
             Events["ReviewDataEvent"].active = _storedData.Count > 0;
+
+            Events["OpenGui"].guiActive =  
+                (skylabcoreModule != null && 
+                 part.protoModuleCrew.Count >= skylabcoreModule.minimumCrew &&
+                 !Utils.CheckBoring(vessel) &&
+                 skylabcoreModule.GetCrewScientistTotals() >= skylabcoreModule.minCrewScienceExp) ;
         }
 
         private void OnPause()
@@ -401,11 +420,13 @@ namespace LtScience.Modules
 
         #region KSP Events
 
-        [KSPEvent(guiActive = true, guiName = "#autoLOC_LTech_Experiment_001")] // Open experiment GUI
+
+        [KSPEvent(active = true, guiActive = true, guiName = "#autoLOC_LTech_Experiment_001")] // Open experiment GUI
         public void OpenGui()
         {
             ToggleGUI();
         }
+
         internal void ToggleGUI()
         {
             if (windowSkylab == null)
@@ -444,7 +465,7 @@ namespace LtScience.Modules
         public void ReviewDataEvent()
         {
             ReviewData();
-            UpdateUI();
+            //UpdateUI();
         }
 
         #endregion
@@ -512,7 +533,7 @@ namespace LtScience.Modules
                     part.GetConnectedResourceTotals(resourceID, out double amount, out double maxAmount);
 
                     expStatuses[activeExperiment.Key].lastTimeUpdated = Planetarium.GetUniversalTime();
-                   // var experiment = experiments[activeExperiment.activeExpid];
+                    // var experiment = experiments[activeExperiment.activeExpid];
                 }
                 else
                 {
@@ -683,22 +704,29 @@ namespace LtScience.Modules
 
             ModuleScienceExperiment exp = activeExperiment.mse;
 
-
+#if DEBUG
             var step = "Get Subject";
+#endif
             ScienceSubject labSub = ResearchAndDevelopment.GetExperimentSubject(labExp, activeExperiment.expSit, vessel.mainBody, activeExperiment.biomeSit, displayBiome);
             labSub.title = $"{labExp.experimentTitle}";
             labSub.subjectValue *= labBoostScalar;
             labSub.scienceCap = labExp.scienceCap * labSub.subjectValue;
 
+#if DEBUG
             step = "Calculate Points";
+#endif
             float sciencePoints = labExp.baseValue * labExp.dataScale;
 
             ScienceData labData = new ScienceData(sciencePoints, exp.xmitDataScalar, 0, labSub.id, labSub.title, false, vessel.rootPart.flightID);
 
+#if DEBUG
             step = "Add Experiment";
+#endif
             _storedData.Add(labData);
 
+#if DEBUG
             step = "Show Dialog";
+#endif
             Utils.DisplayScreenMsg(Localizer.Format("#autoLOC_238419", vessel.rootPart.partInfo.title, labData.dataAmount, labSub.title));
             ReviewDataItem(labData);
 
@@ -747,13 +775,13 @@ namespace LtScience.Modules
         {
             _expDialog = null;
             DumpData(data);
-            UpdateUI();
+            //UpdateUI();
         }
 
         private void OnKeepData(ScienceData data)
         {
             _expDialog = null;
-            UpdateUI();
+            //UpdateUI();
         }
 
         private void OnTransmitData(ScienceData data)
@@ -775,7 +803,7 @@ namespace LtScience.Modules
                 Utils.DisplayScreenMsg(Localizer.Format("#autoLOC_237740"));
             }
 
-            UpdateUI();
+            //UpdateUI();
         }
 
         private void OnSendToLab(ScienceData data)
@@ -791,7 +819,7 @@ namespace LtScience.Modules
             else
             {
                 labSearch.PostErrorToScreen();
-                UpdateUI();
+                //UpdateUI();
             }
         }
 
@@ -820,13 +848,13 @@ namespace LtScience.Modules
                 return;
 
             _storedData.Add(data);
-            UpdateUI();
+            //UpdateUI();
         }
 
         public void DumpData(ScienceData data)
         {
             _storedData.Remove(data);
-            UpdateUI();
+            //UpdateUI();
         }
 
         #endregion

@@ -81,10 +81,17 @@ namespace LtScience.Modules
         private bool _tookPic;
         private float _timer;
 
+        bool hasHullCameraVDS = false;
         #endregion
 
         #region Methods
 
+        void Start()
+        {
+            hasHullCameraVDS = SpaceTuxUtility.HasMod.hasMod("HullCamera");
+            Log.Info("hasHullCameraVDS: " + hasHullCameraVDS);
+
+        }
         private static void SaveMainCamera()
         {
             _origParent = _cam.transform.parent;
@@ -371,6 +378,10 @@ namespace LtScience.Modules
                 CleanUp();
                 return;
             }
+
+            if (GameSettings.CAMERA_RESET.GetKeyDown() || GameSettings.CAMERA_NEXT.GetKeyDown())
+                LeaveCamera();
+
 
             Events["ActivateCameraEvent"].guiName = ltCamActive ? Localizer.Format("#autoLOC_LTech_Hullcam_009") : Localizer.Format("#autoLOC_LTech_Hullcam_006");
             Events["DeployExperiment"].guiActive = ltCamActive;

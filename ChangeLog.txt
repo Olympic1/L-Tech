@@ -1,5 +1,8 @@
 Changelog
 
+0.5.1.5
+	Fixed doubled "Picture Picture" experiment name when taking a picture
+
 0.5.1.4 
 	Increased mass of seeds & updated descripion
 	Added "Biome dependent" to experiment definitions

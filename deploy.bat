@@ -10,6 +10,9 @@ rem    but not always
 set H=%KSPDIR%
 set GAMEDIR=LTech
 set GAMEDATA="GameData"
+
+set H=R:\KSP_1.10.1-LTech
+
 set VERSIONFILE=%GAMEDIR%.version
 
 copy /Y "%1%2" "%GAMEDATA%\%GAMEDIR%\Plugins"

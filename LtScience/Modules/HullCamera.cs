@@ -53,8 +53,8 @@ namespace LtScience.Modules
         [KSPField]
         public string specialExperimentName = "photo-";
 
-        [KSPField]
-        public string specialExperimentTitle = "#Anon# Picture";
+        //[KSPField]
+        //public string specialExperimentTitle = "#Anon#";
 
         // Camera properties
         private static readonly List<HullCamera> _cameras = new List<HullCamera>();
@@ -74,7 +74,7 @@ namespace LtScience.Modules
         private static float _origClip;
 
         // Screenshot properties
-        private static readonly string folder = $"{KSPUtil.ApplicationRootPath}Screenshots/LTech/";
+        private static  string folder;
         private int _cnt;
         private string _screenshotFile = string.Empty;
         private bool _takingPic;
@@ -90,7 +90,8 @@ namespace LtScience.Modules
         {
             hasHullCameraVDS = SpaceTuxUtility.HasMod.hasMod("HullCamera");
             Log.Info("hasHullCameraVDS: " + hasHullCameraVDS);
-
+            folder = KSPUtil.ApplicationRootPath + "Screenshots/LTech/";
+            Log.Info("folder: " + folder);
         }
         private static void SaveMainCamera()
         {
@@ -208,7 +209,7 @@ namespace LtScience.Modules
             Utils.DisplayScreenMsg(Localizer.Format("#autoLOC_LTech_Hullcam_004", expName, expValue));
 
             experiment.id = specialExperimentName + expId;
-            experiment.experimentTitle = specialExperimentTitle.Replace("#Anon#", expName);
+            experiment.experimentTitle = expName;
             experiment.baseValue = expValue;
             experiment.dataScale = expData;
             base.DeployExperiment();
@@ -287,6 +288,8 @@ namespace LtScience.Modules
         {
             BeginPic();
         }
+
+
 
         [KSPEvent(guiActive = true, guiName = "#autoLOC_LTech_Hullcam_008")]
         public void DetectAnomaliesEvent()

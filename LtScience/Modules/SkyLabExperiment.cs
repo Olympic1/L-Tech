@@ -708,7 +708,10 @@ namespace LtScience.Modules
             var step = "Get Subject";
 #endif
             ScienceSubject labSub = ResearchAndDevelopment.GetExperimentSubject(labExp, activeExperiment.expSit, vessel.mainBody, activeExperiment.biomeSit, displayBiome);
-            labSub.title = $"{labExp.experimentTitle}";
+            //labSub.title = $"{labExp.experimentTitle}";
+
+            labSub.title = ScienceUtil.GenerateScienceSubjectTitle(labExp, activeExperiment.expSit, vessel.mainBody, activeExperiment.biomeSit, displayBiome);
+
             labSub.subjectValue *= labBoostScalar;
             labSub.scienceCap = labExp.scienceCap * labSub.subjectValue;
 

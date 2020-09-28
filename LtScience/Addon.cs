@@ -276,6 +276,8 @@ namespace LtScience
         IEnumerator SlowUpdate()
         {
             Log.Info("Addon.SlowUpdate started");
+            if (vesselsWithSkylab != null)
+                
             while (true)
             {
                 // Look at each vessel with one or more Skylab parts

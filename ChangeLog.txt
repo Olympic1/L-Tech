@@ -1,5 +1,10 @@
 Changelog
 
+0.5.1.6 
+	Updated internal storage for seeds in the Skylab to 20 
+	Fixed exception in SlowUpdate when starting up
+	Fixed experiment report to indicate that experiments are biome-specific
+
 0.5.1.5
 	Fixed doubled "Picture Picture" experiment name when taking a picture
 

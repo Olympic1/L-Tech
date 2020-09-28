@@ -23,8 +23,6 @@ Balance issue
     Misplaced a decimal point somewhere, maybe? 2000 is definitely 50% of 4000, and 4000 is 10x 400 (i.e. "scienceCap".)
     I am using RSS right now, but all the rest of the science values are what I expect them to be, i.e. painfully and depressingly low. I don't think that's affecting things, unless there's some hardcoding somewhere.
 
-Yet another edit: I also noticed that the "Plant Seeds" resource is about 10x as dense as the other ones - intentional, or no?
 
-the science window doesn't imply that the experiments are biome-dependent. No wonder I went off the rails thinking it was time-dependent.
 
 If you have the PAW up and switch to camera view, and then close the PAW, you have no way to return to normal flight view - at least I can tell. This one might just be a lack of education than a bug - none of the camera switch controls I tried worked to return me from the camera view.

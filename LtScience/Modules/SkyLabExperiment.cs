@@ -47,6 +47,7 @@ namespace LtScience.Modules
         internal string neededResourceName;
         internal double resourceAmtRequired;
         internal double resourceUsageRate;
+        internal float xmitDataScalar;
         internal uint biomeMask;
         internal uint situationMask;
 
@@ -87,14 +88,16 @@ namespace LtScience.Modules
             node.TryGetValue("tooltip", ref experiment.tooltip);
             node.TryGetValue("resourceUsed", ref experiment.neededResourceName);
             node.TryGetValue("resourceAmtRequired", ref experiment.resourceAmtRequired);
+            node.TryGetValue("xmitDataScalar", ref experiment.xmitDataScalar);
             node.TryGetValue("resourceUsageRate", ref experiment.resourceUsageRate);
-
+#if false
             Log.Info("Experiment.Load, id: " + experiment.name +
                 ", label: " + experiment.label +
                 ", tooltip: " + experiment.tooltip +
                 ", neededResourceName: " + experiment.neededResourceName +
                 ", resourceAmtRequired: " + experiment.resourceAmtRequired +
                 ", resourceUsageRate: " + resourceUsageRate);
+#endif
             return experiment;
         }
     }
@@ -164,12 +167,18 @@ namespace LtScience.Modules
             {
                 ModuleScienceExperiment exp = new ModuleScienceExperiment();
                 exp.experimentID = expStatus.expId;
+                if (experiments[expStatus.expId].xmitDataScalar > 0)
+                    exp.xmitDataScalar = experiments[expStatus.expId].xmitDataScalar;
+                Log.Info("Load, expId: " + expStatus.expId + ", xmitDataScalar: " + exp.xmitDataScalar);
+
                 if (instance != null)
                     instance.SetUpActiveExperiment(expStatus.expId, expStatus.biome, exp, expStatus.reqResource);
             }
+#if false
             Log.Info("ExpStatus.Load, expId: " + expStatus.expId + ", key: " + expStatus.key + ", bodyName: " + expStatus.bodyName +
                 ", vesselSit: " + expStatus.vesselSit + ", biome: " + expStatus.biome + ", processedResource: " + expStatus.processedResource +
                 ", reqAmount: " + expStatus.reqAmount + ", active: " + expStatus.active);
+#endif
             return expStatus;
         }
 
@@ -397,11 +406,11 @@ namespace LtScience.Modules
             Events["EvaCollect"].active = _storedData.Count > 0;
             Events["ReviewDataEvent"].active = _storedData.Count > 0;
 
-            Events["OpenGui"].guiActive =  
-                (skylabcoreModule != null && 
+            Events["OpenGui"].guiActive =
+                (skylabcoreModule != null &&
                  part.protoModuleCrew.Count >= skylabcoreModule.minimumCrew &&
                  !Utils.CheckBoring(vessel) &&
-                 skylabcoreModule.GetCrewScientistTotals() >= skylabcoreModule.minCrewScienceExp) ;
+                 skylabcoreModule.GetCrewScientistTotals() >= skylabcoreModule.minCrewScienceExp);
         }
 
         private void OnPause()
@@ -514,9 +523,9 @@ namespace LtScience.Modules
                 {
                     if (!expStatuses.ContainsKey(activeExperiment.Key))
                     {
-                        Log.Info("Key missing from expStatuses, key: " + activeExperiment.Key);
+                        Log.Error("Key missing from expStatuses, key: " + activeExperiment.Key);
                         foreach (var e in expStatuses.Keys)
-                            Log.Info("key: " + e);
+                            Log.Error("key: " + e);
                     }
                     double resourceRequest = delta / Planetarium.fetch.fixedDeltaTime;
 
@@ -533,6 +542,20 @@ namespace LtScience.Modules
                     part.GetConnectedResourceTotals(resourceID, out double amount, out double maxAmount);
 
                     expStatuses[activeExperiment.Key].lastTimeUpdated = Planetarium.GetUniversalTime();
+
+                    if ((bool)WindowSkylab.exitWarpWhenDone)
+                    {
+                        var percent = 0.001 + expStatuses[activeExperiment.Key].processedResource / Addon.experiments[activeExperiment.activeExpid].resourceAmtRequired * 100;
+                        if (percent >= 100f)
+                        {
+                            if (TimeWarp.CurrentRateIndex > 0)
+                            {
+                                StartCoroutine(CancelWarp());
+                                //TimeWarp.fetch.CancelAutoWarp();
+                                //TimeWarp.SetRate(0, true);
+                            }
+                        }
+                    }
                     // var experiment = experiments[activeExperiment.activeExpid];
                 }
                 else
@@ -546,6 +569,20 @@ namespace LtScience.Modules
             else
                 if (experimentStarted)
                 Log.Info("FixedUpdate, activeExperiment is null");
+        }
+
+        IEnumerator CancelWarp()
+        {
+            TimeWarp w = TimeWarp.fetch;
+            TimeWarp.fetch.CancelAutoWarp();
+            while (w.current_rate_index > 0)
+            {
+                Log.Info("Reducing Warp");
+                //Make sure we cancel autowarp if its engaged
+                TimeWarp.SetRate(w.current_rate_index - 1, true);
+                yield return new WaitForSecondsRealtime(0.25f);
+            }
+            yield return null;
         }
         #endregion
         #region Science
@@ -563,6 +600,9 @@ namespace LtScience.Modules
                 //Vessel ves = FlightGlobals.ActiveVessel;
                 Part prt = FlightGlobals.ActiveVessel.rootPart;
                 ModuleScienceExperiment exp = new ModuleScienceExperiment();
+                if (experiments[expId].xmitDataScalar > 0)
+                    exp.xmitDataScalar = experiments[expId].xmitDataScalar;
+                Log.Info("DoScience, expId: " + expId + ", xmitDataScalar: " + exp.xmitDataScalar);
 
                 // Checks
                 step = "Check Boring";
@@ -700,6 +740,9 @@ namespace LtScience.Modules
             {
                 activeExperiment.biomeSit = ScienceUtil.GetExperimentBiome(vessel.mainBody, vessel.latitude, vessel.longitude);
                 displayBiome = ScienceUtil.GetBiomedisplayName(vessel.mainBody, activeExperiment.biomeSit);
+
+                activeExperiment.biomeSit = "";
+                displayBiome = "";
             }
 
             ModuleScienceExperiment exp = activeExperiment.mse;
@@ -709,10 +752,13 @@ namespace LtScience.Modules
 #endif
             ScienceSubject labSub = ResearchAndDevelopment.GetExperimentSubject(labExp, activeExperiment.expSit, vessel.mainBody, activeExperiment.biomeSit, displayBiome);
             //labSub.title = $"{labExp.experimentTitle}";
+            if (activeExperiment.biomeSit != "")
+                labSub.title = ScienceUtil.GenerateScienceSubjectTitle(labExp, activeExperiment.expSit, vessel.mainBody, activeExperiment.biomeSit, displayBiome);
+            else
+                labSub.title = ScienceUtil.GenerateScienceSubjectTitle(labExp, activeExperiment.expSit, vessel.mainBody);
 
-            labSub.title = ScienceUtil.GenerateScienceSubjectTitle(labExp, activeExperiment.expSit, vessel.mainBody, activeExperiment.biomeSit, displayBiome);
 
-            labSub.subjectValue *= labBoostScalar;
+            //labSub.subjectValue *= labBoostScalar;
             labSub.scienceCap = labExp.scienceCap * labSub.subjectValue;
 
 #if DEBUG
@@ -735,7 +781,7 @@ namespace LtScience.Modules
 
             expStatuses.Remove(activeExperiment.Key);
             activeExperiment = null;
-
+            labData = null;
         }
         #endregion
 
@@ -743,6 +789,7 @@ namespace LtScience.Modules
 
         private void ShowResultDialog(ScienceData data)
         {
+            Log.Info("ShowResultDialog");
             ScienceLabSearch labSearch = new ScienceLabSearch(FlightGlobals.ActiveVessel, data);
 
             _expDialog = ExperimentsResultDialog.DisplayResult(new ExperimentResultDialogPage(
@@ -758,19 +805,26 @@ namespace LtScience.Modules
                 OnKeepData,
                 OnTransmitData,
                 OnSendToLab));
+
+            ScienceSubject subjectByID = ResearchAndDevelopment.GetSubjectByID(data.subjectID);
+            var refValue = ResearchAndDevelopment.GetReferenceDataValue(data.dataAmount, subjectByID) * HighLogic.CurrentGame.Parameters.Career.ScienceGainMultiplier;
+            var scienceValue = ResearchAndDevelopment.GetScienceValue(data.dataAmount, data.scienceValueRatio, subjectByID, 1f) * HighLogic.CurrentGame.Parameters.Career.ScienceGainMultiplier;
+
+            //Log.Info("ShowResultDialog, data: " + data.title + ", labValue: " + data.labValue + ", dataAmount: " + data.dataAmount + ", scienceValueRatio: " + data.scienceValueRatio  + " ,baseTransmitValue: " + data.baseTransmitValue + ", transmitBonus: " + data.transmitBonus + " ::: data.subjectID: " + data.subjectID + ", data.dataAmount: " + data.dataAmount + ", subjectByID: " + subjectByID.id + ", subjectByID.dataScale: " + subjectByID.dataScale + ", subjectByID.subjectValue: " + subjectByID.subjectValue + ", HighLogic.CurrentGame.Parameters.Career.ScienceGainMultiplier: " + HighLogic.CurrentGame.Parameters.Career.ScienceGainMultiplier +  ", refValue: " + refValue + ", scienceValue: " + scienceValue);
         }
 
         public void ReviewData()
         {
-            if (_storedData.Count <= 0)
+            if (_storedData.Count == 0)
                 return;
-
+            Log.Info("ReviewData");
             foreach (ScienceData data in _storedData)
                 ReviewDataItem(data);
         }
 
         public void ReviewDataItem(ScienceData data)
         {
+            Log.Info("ReviewDataItem");
             ShowResultDialog(data);
         }
 

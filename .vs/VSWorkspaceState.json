@@ -3,15 +3,13 @@
     "",
     "\\GameData",
     "\\GameData\\LTech",
+    "\\GameData\\LTech\\Localization",
     "\\GameData\\LTech\\Parts",
-    "\\GameData\\LTech\\Parts\\Science",
-    "\\GameData\\LTech\\Parts\\Science\\SkyLab",
     "\\GameData\\LTech\\Resources",
     "\\LtScience",
     "\\LtScience\\Modules",
     "\\LtScience\\Utilities",
     "\\LtScience\\Windows"
   ],
-  "SelectedNode": "\\LtScience\\Modules\\HullCamera.cs",
   "PreviewInSolutionExplorer": false
 }

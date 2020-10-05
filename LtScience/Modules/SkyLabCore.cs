@@ -87,7 +87,7 @@ namespace LtScience.Modules
                     }
                 }
             }
-            Log.Info("GetCrewTraitTotals, trait: " + kerbalTrait + ",  experience: " + experienceTotals);
+            //Log.Info("GetCrewTraitTotals, trait: " + kerbalTrait + ",  experience: " + experienceTotals);
             return experienceTotals;
         }
 

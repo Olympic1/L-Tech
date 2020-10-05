@@ -27,6 +27,10 @@ namespace LtScience.Utilities
         public bool useAltSkin = true;
 
 
+        [GameParameters.CustomParameterUI("Stop Warp when completed",
+          toolTip = "If warp in progress when experiment is completed, safely stop the warp")]
+        public bool exitWarpWhenDone = true;
+
 
         public override void SetDifficultyPreset(GameParameters.Preset preset) { }
 

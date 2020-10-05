@@ -55,6 +55,9 @@ namespace LtScience.Windows
         internal SkylabExperiment LabExp { get { return _labExp; } set { _labExp = value; } }
 
         bool visible = true;
+
+        static public bool? exitWarpWhenDone;
+
         void Start()
         {
             GameEvents.onHideUI.Add(OnHideUI);
@@ -62,6 +65,9 @@ namespace LtScience.Windows
             GameEvents.onGamePause.Add(OnHideUI);
             GameEvents.onGameUnpause.Add(OnShowUI);
             winID = WindowHelper.NextWindowId("SkylabExperiment");
+
+            if (exitWarpWhenDone == null)
+                exitWarpWhenDone = HighLogic.CurrentGame.Parameters.CustomParams<LTech_1>().exitWarpWhenDone;
         }
         void OnDestroy()
         {
@@ -123,13 +129,29 @@ namespace LtScience.Windows
 
         bool clickToDel = false;
         double clicktoDelTime = 0;
+
         private void StartExperiment()
         {
             if (clickToDel && Planetarium.GetUniversalTime() - clicktoDelTime > 5)
                 clickToDel = false;
             try
             {
-                foreach (var e in Addon.experiments.Values)
+                ExperimentSituations vesselSit = ScienceUtil.GetExperimentSituation(FlightGlobals.ActiveVessel);
+                string result = "";
+                switch (vesselSit)
+                {
+                    case ExperimentSituations.InSpaceHigh:
+                        result = Localizer.Format("In space high over <<1>>", FlightGlobals.ActiveVessel.mainBody.displayName);
+                        break;
+                    case ExperimentSituations.InSpaceLow:
+                        result = Localizer.Format("In space near <<1>>", FlightGlobals.ActiveVessel.mainBody.displayName);
+                        break;
+                }
+                GUILayout.Label("Situation: " + result);
+                exitWarpWhenDone = GUILayout.Toggle((bool)exitWarpWhenDone, "Stop Warp when completed");
+
+                GUILayout.Space(height);
+                foreach (Experiment e in Addon.experiments.Values)
                 {
                     double percent = 0;
                     if (_labExp.activeExperiment != null)
@@ -140,8 +162,8 @@ namespace LtScience.Windows
                             _labExp.expStatuses[_labExp.activeExperiment.Key].expId == e.name)
                         {
 
-                            percent = _labExp.expStatuses[_labExp.activeExperiment.Key].processedResource / Addon.experiments[_labExp.activeExperiment.activeExpid].resourceAmtRequired * 100;
-                            if (percent < 100)
+                            percent = 0.001 + _labExp.expStatuses[_labExp.activeExperiment.Key].processedResource / Addon.experiments[_labExp.activeExperiment.activeExpid].resourceAmtRequired * 100;
+                            if (percent < 100f)
                             {
                                 if (clickToDel)
                                     _guiLabel = new GUIContent("Click to Cancel: " + e.label + " - " + percent.ToString("F2") + " % completed", e.tooltip);
@@ -161,8 +183,30 @@ namespace LtScience.Windows
                         }
                     }
                     else
+                    {
+                        ScienceExperiment experiment = ResearchAndDevelopment.GetExperiment(e.name);
+                        string title = ScienceUtil.GenerateScienceSubjectTitle(experiment, vesselSit, FlightGlobals.ActiveVessel.mainBody);
                         _guiLabel = new GUIContent(e.label, e.tooltip);
 
+                        //var key1 = e.name + "@" + FlightGlobals.ActiveVessel.mainBody.name + vesselSit.ToString();
+
+                        //var m = ResearchAndDevelopment.GetResults(key1);
+                        //if (m == null) m = "(null)";
+                        //Log.Info("Experiment.Key: " + key1 + ",  result: " + m);
+
+                        ScienceSubject subject = ResearchAndDevelopment.GetExperimentSubject(experiment, vesselSit,
+                             FlightGlobals.ActiveVessel.mainBody, null, null);
+#if false
+
+                                    float maxScience, availScience;
+                        Debug.Log("WindowSkyLab, subject: " + subject.id);
+                        Debug.Log("key1: " + key1);
+                        Debug.Log("WindowSkyLab, checkExperiment: " + 
+                            checkExperiment(e.name, experiment.id, vesselSit, FlightGlobals.ActiveVessel.mainBody, "", out maxScience, out availScience));
+                        Debug.Log("maxScience: " + maxScience + ", availScience: " + availScience);
+#endif
+
+                    }
                     if (GUILayout.Button(_guiLabel, GUILayout.Height(height)))
                     {
                         if (percent == 0)
@@ -195,6 +239,29 @@ namespace LtScience.Windows
                 Log.Error($"WindowSkylab.DisplayExperiments. Error: {ex.Message}\r\n\r\n{ex.StackTrace}");
             }
         }
+
+#region ExperimentTracker
+        public bool checkExperiment(string expName, string experimentID, ExperimentSituations expSituation, CelestialBody lastBody, string curBiome,
+            out float maxScience, out float availScience)
+        {
+            ScienceExperiment sciexp = ResearchAndDevelopment.GetExperiment(experimentID);
+            ScienceSubject sub = ResearchAndDevelopment.GetExperimentSubject(sciexp, expSituation, lastBody, curBiome, curBiome);
+            float dmscival = ResearchAndDevelopment.GetScienceValue(sciexp.dataScale * sciexp.baseValue, sub);
+
+            maxScience = sciexp.dataScale * sciexp.baseValue;
+            availScience =  dmscival;
+
+
+            //var CompletedScience = ScienceSubject.science * HighLogic.CurrentGame.Parameters.Career.ScienceGainMultiplier;
+            var TotalScience = sciexp.scienceCap * HighLogic.CurrentGame.Parameters.Career.ScienceGainMultiplier;
+            maxScience = TotalScience;
+
+            return dmscival > 1f;
+
+        }
+
+#endregion
+
 
         private void DisplayActions()
         {

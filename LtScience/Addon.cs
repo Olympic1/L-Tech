@@ -56,7 +56,11 @@ namespace LtScience
         // Makes instance available via reflection
         public static Addon Instance;
 
-        public static KSP_Log.Log Log;
+        public static KSP_Log.Log Log = new KSP_Log.Log("L-Tech"
+#if DEBUG
+                , KSP_Log.Log.LEVEL.DETAIL
+#endif
+                );
 
         int settingsID, windowSkylabID;
         #endregion

@@ -1,5 +1,17 @@
 Changelog
 
+0.5.1.7 
+	Reverted experiment report for the Skylab experiments, they are not biome specific
+	Added vessel situation to the experiment report for the Skylab experiments
+	Added vessel situation to Skylab menu
+	Improved experiment report for Skylab, to indicate InSpaceLow or InSpaceHigh
+	Fixed bug where science values were getting nerfed after saving and then reviewing
+	Added ModuleCommand to Skylab part
+	Added individual xmitDataScalar values for each experiment
+	Added automatic stop warp when completed
+	Added setting to make the autostop default always or not
+	Fixed max amounts for the seed containers
+
 0.5.1.6 
 	Updated internal storage for seeds in the Skylab to 20 
 	Fixed exception in SlowUpdate when starting up

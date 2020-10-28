@@ -43,9 +43,9 @@ namespace LtScience
 
         // Toolbar icons
         private const string _blizzyOff = "LTech/PluginData/Buttons/LT_blizzy_off";
-        private const string _blizzyOn =  "LTech/PluginData/Buttons/LT_blizzy_on";
-        private const string _stockOff =  "LTech/PluginData/Buttons/LT_stock_off";
-        private const string _stockOn =   "LTech/PluginData/Buttons/LT_stock_on";
+        private const string _blizzyOn = "LTech/PluginData/Buttons/LT_blizzy_on";
+        private const string _stockOff = "LTech/PluginData/Buttons/LT_stock_off";
+        private const string _stockOn = "LTech/PluginData/Buttons/LT_stock_on";
 
         // Repeating error latch
         internal static bool FrameErrTripped;
@@ -281,77 +281,61 @@ namespace LtScience
         {
             Log.Info("Addon.SlowUpdate started");
             if (vesselsWithSkylab != null)
-                
-            while (true)
-            {
-                // Look at each vessel with one or more Skylab parts
-                Log.Info("SlowUpdate, vesselsWithSkylab.Count(): " + vesselsWithSkylab.Count());
 
-                foreach (var v in vesselsWithSkylab)
+                while (true)
                 {
-                    if (v.packed) // Only packed vessels, which are on rails
+                    // Look at each vessel with one or more Skylab parts
+                    Log.Info("SlowUpdate, vesselsWithSkylab.Count(): " + vesselsWithSkylab.Count());
+
+                    foreach (var v in vesselsWithSkylab)
                     {
-                        // Look at all the parts in the vessel
-                        foreach (ProtoPartSnapshot ppsSkylab in v.protoVessel.protoPartSnapshots)
+                        if (v.packed) // Only packed vessels, which are on rails
                         {
-                            // Find the part(s) which have the SkylabExperiment
-                            ProtoPartModuleSnapshot pms = ppsSkylab.FindModule("SkylabExperiment");
-                            if (pms != null)
+                            // Look at all the parts in the vessel
+                            foreach (ProtoPartSnapshot ppsSkylab in v.protoVessel.protoPartSnapshots)
                             {
-                                // Check for active experiments
-                                if (pms.moduleValues.HasNode(LtScience.Modules.ExpStatus.EXPERIMENT_STATUS))
+                                // Find the part(s) which have the SkylabExperiment
+                                ProtoPartModuleSnapshot pms = ppsSkylab.FindModule("SkylabExperiment");
+                                if (pms != null)
                                 {
-                                    // Loop through all nodes which are active experiments
-                                    var activeExpNodes = pms.moduleValues.GetNodes(LtScience.Modules.ExpStatus.EXPERIMENT_STATUS);
-                                    for (var i = 0; i < activeExpNodes.Count(); i++)
+                                    // Check for active experiments
+                                    if (pms.moduleValues.HasNode(LtScience.Modules.ExpStatus.EXPERIMENT_STATUS))
                                     {
-                                        ConfigNode dataNode = activeExpNodes[i];
-                                        Modules.ExpStatus data = new LtScience.Modules.ExpStatus().Load(dataNode);
-                                        if (data.active)
+                                        // Loop through all nodes which are active experiments
+                                        var activeExpNodes = pms.moduleValues.GetNodes(LtScience.Modules.ExpStatus.EXPERIMENT_STATUS);
+                                        int nodeCnt = activeExpNodes.Count();
+                                        for (var i = 0; i < nodeCnt; i++)
                                         {
-                                            var activeExperiment = new Modules.ActiveExperiment(data.expId, v.mainBody.bodyName, ScienceUtil.GetExperimentSituation(v), data.biome);
-                                            Log.Info("Addon.SlowUpdate, stored key: " + data.key + ", calculated key: " + activeExperiment.KeyUnpacked(data.expId));
-
-                                            if (activeExperiment.KeyUnpacked(data.expId) == data.key)
+                                            ConfigNode dataNode = activeExpNodes[i];
+                                            Modules.ExpStatus data = LtScience.Modules.ExpStatus.Load(dataNode);
+                                            if (data.active)
                                             {
-                                                double delta = Planetarium.GetUniversalTime() - data.lastTimeUpdated;
-                                                Log.Info("Addon.SlowUpdate, Active experiment is in valid situations");
+                                                var activeExperiment = new Modules.ActiveExperiment(data.expId, v.mainBody.bodyName,
+                                                    ScienceUtil.GetExperimentSituation(v), data.biome);
+                                                //Log.Info("Addon.SlowUpdate, stored key: " + data.key + ", calculated key: " + activeExperiment.KeyUnpacked(data.expId));
 
-                                                double resourceRequest = delta / Planetarium.fetch.fixedDeltaTime;
-
-                                                double amtNeeded = Math.Min(
-                                                    experiments[activeExperiment.activeExpid].resourceUsageRate * resourceRequest,
-                                                     experiments[activeExperiment.activeExpid].resourceAmtRequired - data.processedResource);
-
-
-                                                double totalAmtNeeded = amtNeeded;
-
-                                                // look at skylab part first, then rest of vessel
-
-                                                foreach (var pprs in ppsSkylab.resources)
+                                                if (activeExperiment.KeyUnpacked(data.expId) == data.key)
                                                 {
-                                                    if (pprs.resourceName == experiments[activeExperiment.activeExpid].neededResourceName)
+                                                    if (data.processedResource < Addon.experiments[data.expId].resourceAmtRequired)
                                                     {
-                                                        if (pprs.amount > amtNeeded)
-                                                        {
-                                                            pprs.amount -= amtNeeded;
-                                                            amtNeeded = 0;
-                                                        }
-                                                        else
-                                                        {
-                                                            amtNeeded -= pprs.amount;
-                                                            pprs.amount = 0;
-                                                        }
-                                                        break;
-                                                    }
-                                                }
+                                                        double delta = Planetarium.GetUniversalTime() - data.lastTimeUpdated;
+                                                        //Log.Info("Addon.SlowUpdate, Active experiment is in valid situations");
 
-                                                // If there wasn't enough of the resource in the Skylab part, then look at the rest of the vessel
-                                                if (amtNeeded > 0)
-                                                {
-                                                    foreach (ProtoPartSnapshot pps in v.protoVessel.protoPartSnapshots)
-                                                    {
-                                                        foreach (var pprs in pps.resources)
+                                                        double resourceRequest = delta / Planetarium.fetch.fixedDeltaTime;
+
+                                                        double amtNeeded = Math.Min(
+                                                            experiments[activeExperiment.activeExpid].resourceUsageRate * resourceRequest,
+                                                             experiments[activeExperiment.activeExpid].resourceAmtRequired - data.processedResource);
+
+                                                        //Log.Info("Planetarium.fetch.fixedDeltaTime: " + Planetarium.fetch.fixedDeltaTime +
+                                                        //    ", resourceUsageRate: " + experiments[activeExperiment.activeExpid].resourceUsageRate +
+                                                        //    ", resourceRequest: " + resourceRequest + ", amtNeeded: " + amtNeeded);
+
+                                                        double totalAmtNeeded = amtNeeded;
+
+                                                        // look at skylab part first, then rest of vessel
+
+                                                        foreach (var pprs in ppsSkylab.resources)
                                                         {
                                                             if (pprs.resourceName == experiments[activeExperiment.activeExpid].neededResourceName)
                                                             {
@@ -365,25 +349,62 @@ namespace LtScience
                                                                     amtNeeded -= pprs.amount;
                                                                     pprs.amount = 0;
                                                                 }
-
                                                                 break;
                                                             }
                                                         }
+
+                                                        // If there wasn't enough of the resource in the Skylab part, then look at the rest of the vessel
+                                                        if (amtNeeded > 0)
+                                                        {
+                                                            foreach (ProtoPartSnapshot pps in v.protoVessel.protoPartSnapshots)
+                                                            {
+                                                                foreach (var pprs in pps.resources)
+                                                                {
+                                                                    if (pprs.resourceName == experiments[activeExperiment.activeExpid].neededResourceName)
+                                                                    {
+                                                                        if (pprs.amount > amtNeeded)
+                                                                        {
+                                                                            pprs.amount -= amtNeeded;
+                                                                            amtNeeded = 0;
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            amtNeeded -= pprs.amount;
+                                                                            pprs.amount = 0;
+                                                                        }
+
+                                                                        break;
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                        data.processedResource += totalAmtNeeded - Math.Max(0, amtNeeded);
+
+                                                        Log.Info("processedResource: " + data.processedResource);
+
+                                                        data.lastTimeUpdated = Planetarium.GetUniversalTime();
+                                                        data.Save(dataNode);
+                                                        activeExpNodes[i] = dataNode;
                                                     }
                                                 }
                                             }
+
+                                        }
+                                        //var activeExpNodes = pms.moduleValues.GetNodes(LtScience.Modules.ExpStatus.EXPERIMENT_STATUS);
+                                        pms.moduleValues.RemoveNodes(LtScience.Modules.ExpStatus.EXPERIMENT_STATUS);
+                                        for (int i = 0; i < nodeCnt; i++)
+                                        {
+                                            pms.moduleValues.AddNode(LtScience.Modules.ExpStatus.EXPERIMENT_STATUS, activeExpNodes[i]);
                                         }
                                     }
-
                                 }
                             }
                         }
+                        // Being a nice citizen by yielding after each vessel is processed
+                        yield return null;
                     }
-                    // Being a nice citizen by yielding after each vessel is processed
-                    yield return null;
+                    yield return new WaitForSecondsRealtime(5.0f);
                 }
-                yield return new WaitForSecondsRealtime(5.0f);
-            }
         }
 
         // Save settings on scene changes
@@ -425,7 +446,7 @@ namespace LtScience
                 //    return;
 
                 WindowSettings.showWindow = !WindowSettings.showWindow;
-                toolbarControl.SetTexture(WindowSettings.showWindow ? _stockOn : _stockOff, 
+                toolbarControl.SetTexture(WindowSettings.showWindow ? _stockOn : _stockOff,
                                           WindowSettings.showWindow ? _blizzyOn : _blizzyOff);
             }
             catch (Exception ex)

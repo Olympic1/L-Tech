@@ -134,6 +134,7 @@ namespace LtScience.Modules
 
         protected internal ExpStatus() // internal use only
         {
+
             expId = "";
             key = "";
             bodyName = "";
@@ -149,7 +150,7 @@ namespace LtScience.Modules
                 return key;
             }
         }
-        public ExpStatus Load(ConfigNode node, SkylabExperiment instance = null)
+        public static ExpStatus Load(ConfigNode node, SkylabExperiment instance = null)
         {
             var expStatus = new ExpStatus();
 
@@ -169,10 +170,9 @@ namespace LtScience.Modules
                 exp.experimentID = expStatus.expId;
                 if (experiments[expStatus.expId].xmitDataScalar > 0)
                     exp.xmitDataScalar = experiments[expStatus.expId].xmitDataScalar;
-                Log.Info("Load, expId: " + expStatus.expId + ", xmitDataScalar: " + exp.xmitDataScalar);
 
                 if (instance != null)
-                    instance.SetUpActiveExperiment(expStatus.expId, expStatus.biome, exp, expStatus.reqResource);
+                    instance.SetUpActiveExperiment(expStatus.expId, expStatus.biome, exp, expStatus.reqResource, expStatus.processedResource);
             }
 #if false
             Log.Info("ExpStatus.Load, expId: " + expStatus.expId + ", key: " + expStatus.key + ", bodyName: " + expStatus.bodyName +
@@ -184,16 +184,16 @@ namespace LtScience.Modules
 
         public void Save(ConfigNode node)
         {
-            node.AddValue("expId", expId);
-            node.AddValue("key", key);
-            node.AddValue("bodyName", bodyName);
-            node.AddValue("vesselSit", vesselSit);
-            node.AddValue("biome", biome);
-            node.AddValue("processedResource", processedResource);
-            node.AddValue("reqResource", reqResource);
-            node.AddValue("reqAmount", reqAmount);
-            node.AddValue("active", active);
-            node.AddValue("lastTimeUpdated", lastTimeUpdated);
+            node.SetValue("expId", expId, true);
+            node.SetValue("key", key, true);
+            node.SetValue("bodyName", bodyName, true);
+            node.SetValue("vesselSit", vesselSit.ToString(), true);
+            node.SetValue("biome", biome, true);
+            node.SetValue("processedResource", processedResource, true);
+            node.SetValue("reqResource", reqResource, true);
+            node.SetValue("reqAmount", reqAmount, true);
+            node.SetValue("active", active, true);
+            node.SetValue("lastTimeUpdated", lastTimeUpdated, true);
         }
     }
 
@@ -317,9 +317,6 @@ namespace LtScience.Modules
         [KSPField]
         public float labBoostScalar = 1f;
 
-        //[KSPField]
-        //public float resourceUsageRate = 1f;
-
         private readonly List<ScienceData> _storedData = new List<ScienceData>();
         internal Dictionary<string, ExpStatus> expStatuses = new Dictionary<string, ExpStatus>();
         private ExperimentsResultDialog _expDialog;
@@ -333,6 +330,7 @@ namespace LtScience.Modules
             base.Awake();
             GameEvents.onGamePause.Add(OnPause);
             GameEvents.onGameUnpause.Add(OnUnpause);
+            activeExperiment = null;
         }
 
         public override void OnSave(ConfigNode node)
@@ -349,6 +347,7 @@ namespace LtScience.Modules
 
         public override void OnLoad(ConfigNode node)
         {
+            Log.Info("OnLoad");
             _storedData.Clear();
             expStatuses.Clear();
 
@@ -365,8 +364,9 @@ namespace LtScience.Modules
             {
                 foreach (ConfigNode dataNode in node.GetNodes(ExpStatus.EXPERIMENT_STATUS))
                 {
-                    var data = new ExpStatus().Load(dataNode, this);
-                    expStatuses.Add(data.Key, data);
+                    var data = ExpStatus.Load(dataNode, this);
+                    if (!expStatuses.ContainsKey(data.Key))
+                        expStatuses.Add(data.Key, data);
                 }
             }
 
@@ -496,10 +496,10 @@ namespace LtScience.Modules
         }
         public void Do_SlowUpdate()
         {
-            if ((object)activeExperiment != null)
+            if (activeExperiment != null)
             {
-                var curTime = Planetarium.GetUniversalTime();
-                var delta = curTime - lastUpdateTime;
+                double curTime = Planetarium.GetUniversalTime();
+                double delta = curTime - lastUpdateTime;
 
                 // Tasks
                 // 1. Make sure experiment situation hasn't changed, if it has, then return
@@ -517,6 +517,7 @@ namespace LtScience.Modules
                     biome = ScienceUtil.GetExperimentBiome(vessel.mainBody, vessel.latitude, vessel.longitude);
                     displayBiome = ScienceUtil.GetBiomedisplayName(vessel.mainBody, biome);
                 }
+
                 var curExp = new ActiveExperiment(activeExperiment.activeExpid, vessel.mainBody.bodyName, ScienceUtil.GetExperimentSituation(vessel), biome);
 
                 if ((object)curExp != null && curExp.Key == activeExperiment.Key)
@@ -534,16 +535,19 @@ namespace LtScience.Modules
                          experiments[activeExperiment.activeExpid].resourceAmtRequired - expStatuses[activeExperiment.Key].processedResource);
                     amtNeeded = amtNeeded * KCT_Interface.ResearchTimeAdjustment();
 
+                    //Log.Info("SkyLabExperiment, amtNeeded: " + amtNeeded.ToString("F3") + ",  activeExperiment.Key: " + activeExperiment.Key +
+                    //    ", processedResource: " + expStatuses[activeExperiment.Key].processedResource +
+                    //    ", resourceAmtRequired: " + Addon.experiments[activeExperiment.activeExpid].resourceAmtRequired);
+
                     double resource = part.RequestResource(experiments[activeExperiment.activeExpid].neededResourceName, amtNeeded);
                     expStatuses[activeExperiment.Key].processedResource += resource;
 
-
                     int resourceID = GetResourceID(expStatuses[activeExperiment.Key].reqResource);
-                    part.GetConnectedResourceTotals(resourceID, out double amount, out double maxAmount);
+                    //                    part.GetConnectedResourceTotals(resourceID, out double amount, out double maxAmount);
 
                     expStatuses[activeExperiment.Key].lastTimeUpdated = Planetarium.GetUniversalTime();
 
-                    if ((bool)WindowSkylab.exitWarpWhenDone)
+                    if (HighLogic.CurrentGame.Parameters.CustomParams<LTech_1>().exitWarpWhenDone)
                     {
                         var percent = 0.001 + expStatuses[activeExperiment.Key].processedResource / Addon.experiments[activeExperiment.activeExpid].resourceAmtRequired * 100;
                         if (percent >= 100f)
@@ -568,7 +572,8 @@ namespace LtScience.Modules
             }
             else
                 if (experimentStarted)
-                Log.Info("FixedUpdate, activeExperiment is null");
+                    Log.Info("FixedUpdate, activeExperiment is null");
+
         }
 
         IEnumerator CancelWarp()
@@ -638,11 +643,6 @@ namespace LtScience.Modules
                     return;
                 }
 
-#if false
-                step = "Take Resources";
-                Utils.RequestResource(prt, "Insight", reqInsight);
-                Utils.RequestResource(prt, reqResource, reqAmount);
-#endif
                 // Experiment
                 step = "Get Experiment";
                 exp.experimentID = expId;
@@ -706,13 +706,14 @@ namespace LtScience.Modules
         }
 
 
-        internal void SetUpActiveExperiment(string expId, string biome, ModuleScienceExperiment exp, string reqResource)
+        internal void SetUpActiveExperiment(string expId, string biome, ModuleScienceExperiment exp, string reqResource, double processedResource = 0)
         {
 
             activeExperiment = new ActiveExperiment(expId, vessel.mainBody.bodyName, ScienceUtil.GetExperimentSituation(vessel), biome, exp);
 
             ExpStatus es = new ExpStatus(expId, activeExperiment.Key, vessel.mainBody.bodyName, ScienceUtil.GetExperimentSituation(vessel), biome,
                 reqResource, experiments[expId].resourceAmtRequired);
+            es.processedResource = processedResource;
             es.active = true;
             expStatuses.Add(es.Key, es);
             experimentStarted = true;

@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using LtScience.Utilities;
 
 using KerbalConstructionTime;
+using UnityEngine;
+using KSP_Log;
 
 namespace LtScience
 {
@@ -28,8 +30,15 @@ namespace LtScience
         }
         public static double ResearchTimeAdjustment()
         {
-            if (HasKCT && HighLogic.CurrentGame.Parameters.CustomParams<LTech_1>().useEfficiencyMultiplier )
-                return  KCTAdjustment();
+            try
+            {
+                if (HasKCT && HighLogic.CurrentGame.Parameters.CustomParams<LTech_1>().useEfficiencyMultiplier)
+                    return KCTAdjustment();
+            } catch (Exception ex)
+             {
+                Debug.Log("L-Tech: KCT Error, msg: " + ex.Message);
+                return 1f; 
+            }
             return 1f;
         }
     }

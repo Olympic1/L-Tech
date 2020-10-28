@@ -3,6 +3,12 @@
 
 L-Tech Sciencific Industries is a mod designed to add to the career mode of Kerbal Space Program by providing new ways to generate science, aswell as experimenting with new device types.
 
+Thanks to the following for answering my request for some new models:
+	SuicidalInsanity for a new Skylab, science container & sample return bin.
+	Angel-125 made new models for the tanks to hold the resources
+	CoboltWolf for several science parts
+
+
 [![][shield:ksp]][site:ksp]
 [![][shield:ckan]][thread:ckan]
 [![][shield:mit]][file:license]
@@ -26,7 +32,6 @@ L-Tech Sciencific Industries is a mod designed to add to the career mode of Kerb
 * [HullCam VDS](https://forum.kerbalspaceprogram.com/index.php?/topic/145633-vds/)
 * [Kerbal Inventory System](https://forum.kerbalspaceprogram.com/index.php?/topic/101928-kis/)
 * [RasterPropMonitor](https://forum.kerbalspaceprogram.com/index.php?/topic/105821-rpm/)
-* [Snacks](https://forum.kerbalspaceprogram.com/index.php?/topic/149604-snacks/)
 
 ### Incompatible Mods
 * [[x] Science!](https://forum.kerbalspaceprogram.com/index.php?/topic/107661-science)

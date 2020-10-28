@@ -221,12 +221,13 @@ namespace LtScience.Utilities
             return amount;
         }
 
+#if true
         internal static float RequestResource(this Part part, string resourceName, double demand)
         {
             PartResourceDefinition resource = GetDefinition(resourceName);
             return (float)part.RequestResource(resource.id, demand);
         }
-
+#endif
 #endregion
     }
 }

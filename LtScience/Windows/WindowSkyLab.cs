@@ -58,6 +58,12 @@ namespace LtScience.Windows
 
         static public bool? exitWarpWhenDone;
 
+        void Awake()
+        {
+            if (exitWarpWhenDone == null)
+                exitWarpWhenDone = HighLogic.CurrentGame.Parameters.CustomParams<LTech_1>().exitWarpWhenDone;
+
+        }
         void Start()
         {
             GameEvents.onHideUI.Add(OnHideUI);
@@ -66,8 +72,8 @@ namespace LtScience.Windows
             GameEvents.onGameUnpause.Add(OnShowUI);
             winID = WindowHelper.NextWindowId("SkylabExperiment");
 
-            if (exitWarpWhenDone == null)
-                exitWarpWhenDone = HighLogic.CurrentGame.Parameters.CustomParams<LTech_1>().exitWarpWhenDone;
+            //if (exitWarpWhenDone == null)
+            //    exitWarpWhenDone = HighLogic.CurrentGame.Parameters.CustomParams<LTech_1>().exitWarpWhenDone;
         }
         void OnDestroy()
         {
@@ -94,8 +100,6 @@ namespace LtScience.Windows
         {
             try
             {
-                //title = Localizer.Format("#autoLOC_LTech_Skylab_001");
-
                 Rect rect = new Rect(position.width - 20, 4, 16, 16);
                 _label = "x";
                 _tooltip = Localizer.Format("#autoLOC_LTech_Skylab_tt_001");

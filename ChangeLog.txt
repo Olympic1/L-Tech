@@ -1,5 +1,10 @@
 Changelog
 
+0.5.2
+	Fixed severe bug where science was not being accumulated when vessel not active
+	Fixed nullref in kct interface
+	Fixed nullref when entering flight and the Skylab window had not yet been opened
+
 0.5.1.7 
 	Reverted experiment report for the Skylab experiments, they are not biome specific
 	Added vessel situation to the experiment report for the Skylab experiments

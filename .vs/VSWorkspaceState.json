@@ -4,13 +4,13 @@
     "\\GameData",
     "\\GameData\\LTech",
     "\\GameData\\LTech\\Parts",
-    "\\GameData\\LTech\\Parts\\Payload",
-    "\\GameData\\LTech\\Parts\\Payload\\Tanks",
     "\\GameData\\LTech\\Parts\\Science",
     "\\GameData\\LTech\\Parts\\Science\\SkyLab",
+    "\\GameData\\LTech\\Resources",
     "\\LtScience",
+    "\\LtScience\\Modules",
     "\\LtScience\\Windows"
   ],
-  "SelectedNode": "\\GameData\\LTech\\Parts\\Payload\\Tanks\\radialTank-3.cfg",
+  "SelectedNode": "\\GameData\\LTech\\Resources\\Skylab_ScienceDefs.cfg",
   "PreviewInSolutionExplorer": false
 }

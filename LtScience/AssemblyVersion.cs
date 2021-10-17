@@ -10,4 +10,6 @@
   
  using System.Reflection;
 
- [assembly: AssemblyVersion("0.5.1.7")]
+ [assembly: AssemblyFileVersion("0.5.2.0")]
+ [assembly: AssemblyVersion("0.5.2.0")]
+ [assembly: KSPAssembly("LtScience", 0, 5, 2)]

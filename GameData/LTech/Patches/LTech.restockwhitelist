@@ -1,0 +1,4 @@
+// Whitelist to enable some LTech part textures to work correctly when ReStock is installed.
+// See: https://github.com/PorktoberRevolution/ReStocked/wiki/Asset-Blacklist-and-Whitelist
+
+Squad/Parts/Science/ScienceBox/Container

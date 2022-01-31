@@ -1,5 +1,9 @@
 Changelog
 
+0.5.2.3
+	Thanks to @hebarusan for this:
+		Fix capitalization of Skylab
+
 0.5.2.2
 	Thanks to github user @hemeac:
 		Adds Sciencebox container texture to a ReStock whitelist so container parts in LTech are display the correct texture rather than as pure white.

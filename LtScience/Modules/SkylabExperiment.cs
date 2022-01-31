@@ -535,7 +535,7 @@ namespace LtScience.Modules
                          experiments[activeExperiment.activeExpid].resourceAmtRequired - expStatuses[activeExperiment.Key].processedResource);
                     amtNeeded = amtNeeded * KCT_Interface.ResearchTimeAdjustment();
 
-                    //Log.Info("SkyLabExperiment, amtNeeded: " + amtNeeded.ToString("F3") + ",  activeExperiment.Key: " + activeExperiment.Key +
+                    //Log.Info("SkylabExperiment, amtNeeded: " + amtNeeded.ToString("F3") + ",  activeExperiment.Key: " + activeExperiment.Key +
                     //    ", processedResource: " + expStatuses[activeExperiment.Key].processedResource +
                     //    ", resourceAmtRequired: " + Addon.experiments[activeExperiment.activeExpid].resourceAmtRequired);
 

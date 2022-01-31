@@ -1,5 +1,8 @@
 Changelog
 
+0.5.2.3
+	Version bump to fix two directories with same spelling but different
+	case
 0.5.2.2
 	Thanks to github user @hemeac:
 		Adds Sciencebox container texture to a ReStock whitelist so container parts in LTech are display the correct texture rather than as pure white.

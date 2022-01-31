@@ -41,7 +41,7 @@ Changelog
 	Fixed checks for number of crew needed
 	Added enforcement of number of crew needed
 	Added check for minimum aggregrated science experience needed in scientists in lab
-	Reduced frequency of updates to SkyLabCore PAW to 4x/sec
+	Reduced frequency of updates to SkylabCore PAW to 4x/sec
 	Reduced frequency of updates to SkylabExperiment PAW to 4x/sec
 	Added check for stock CAMERA_NEXT key (defaults to V), also added check for stock CAMERA_RESET (defaults to BackQuote)
 	

@@ -8,7 +8,7 @@ Blizzy toolbar button issue
 	When adding the L-Tech icon to Blizzy's Toolbar, it looks fine... but clicking it to open the settings window causes it to go magenta (as in, broken texture magenta.) Clicking it again to close the settings window does not make it revert, but saving settings does cause the icon to go back to normal.
 
 Skylab claims to be short on crew
-	I have three level 2 scientists in my SkyLab, but it claims that I'm short on crew - 2/3, to be specific. It doesn't appear to be tied to the scientists themselves, since I can swap any of them out to my Hitchhiker and it'll still show 2/3. It correctly reflects 1/3 scientists if I remove two of them from the module.
+	I have three level 2 scientists in my Skylab, but it claims that I'm short on crew - 2/3, to be specific. It doesn't appear to be tied to the scientists themselves, since I can swap any of them out to my Hitchhiker and it'll still show 2/3. It correctly reflects 1/3 scientists if I remove two of them from the module.
 
 	Even with that, I apparently am able to study science. In fact, I can still study science with only two scientists in the module.
 

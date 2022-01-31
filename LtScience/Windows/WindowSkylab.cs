@@ -203,9 +203,9 @@ namespace LtScience.Windows
 #if false
 
                                     float maxScience, availScience;
-                        Debug.Log("WindowSkyLab, subject: " + subject.id);
+                        Debug.Log("WindowSkylab, subject: " + subject.id);
                         Debug.Log("key1: " + key1);
-                        Debug.Log("WindowSkyLab, checkExperiment: " + 
+                        Debug.Log("WindowSkylab, checkExperiment: " + 
                             checkExperiment(e.name, experiment.id, vesselSit, FlightGlobals.ActiveVessel.mainBody, "", out maxScience, out availScience));
                         Debug.Log("maxScience: " + maxScience + ", availScience: " + availScience);
 #endif
